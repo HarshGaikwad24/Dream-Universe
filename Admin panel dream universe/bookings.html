@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Universe · Manage Bookings</title>
+
+    <!-- ─── Favicon (globe-icon.png) ─── -->
+    <link rel="icon" type="image/png" href="globe-icon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #c9a94e;
+            --gold-light: #e8d48b;
+            --gold-dark: #a8892e;
+            --gold-glow: rgba(201, 169, 78, 0.25);
+            --bg-dark: #0b0a0a;
+            --bg-card: rgba(14, 14, 18, 0.92);
+            --bg-sidebar: rgba(8, 8, 10, 0.96);
+            --text-light: #f1efe8;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --text-dim: rgba(255, 255, 255, 0.25);
+            --border-gold: rgba(201, 169, 78, 0.15);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: 0.25s ease;
+            --success: #2ecc71;
+            --success-dark: #27ae60;
+            --danger: #e74c3c;
+            --info: #3498db;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(30, 20, 10, 0.40) 0%, rgba(0, 0, 0, 0.92) 90%),
+                radial-gradient(ellipse at 0% 50%, rgba(201, 169, 78, 0.04) 0%, transparent 70%),
+                url('speed.jpeg') center center / cover no-repeat fixed;
+        }
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.60) 100%);
+            pointer-events: none;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--card-border);
+            padding: 1.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .sidebar-brand .icon {
+            font-size: 1.6rem;
+            color: var(--gold);
+            filter: drop-shadow(0 0 12px var(--gold-glow));
+        }
+
+        .sidebar-brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .sidebar-brand small {
+            font-size: 0.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            -webkit-text-fill-color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+            margin-top: -0.1rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .sidebar-nav .nav-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+            padding: 0.8rem 0.8rem 0.3rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-nav a i {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(201, 169, 78, 0.06);
+            color: var(--text-light);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(201, 169, 78, 0.10);
+            color: var(--gold-light);
+            box-shadow: inset 0 0 0 1px rgba(201, 169, 78, 0.08);
+        }
+
+        /* ─── Badge Styling ─── */
+        .sidebar-nav a .badge {
+            margin-left: auto;
+            background: var(--gold-dark);
+            color: #0b0a0a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sidebar-footer .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0b0a0a;
+        }
+
+        .sidebar-footer .info {
+            flex: 1;
+        }
+        .sidebar-footer .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .sidebar-footer .info .role {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        .sidebar-footer .logout {
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .sidebar-footer .logout:hover {
+            color: var(--danger);
+        }
+
+        /* ─── Hamburger ─── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 101;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.5rem 0.7rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s ease;
+        }
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ─── Main Content ─── */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 1.8rem 2.2rem 3rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .topbar-left h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+        .topbar-left h2 span {
+            color: var(--gold);
+        }
+        .topbar-left p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .topbar-right .date-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .topbar-right .date-badge i {
+            color: var(--gold);
+        }
+
+        .search-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1rem 1.4rem;
+            margin-bottom: 1.8rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .search-filter-bar .search-wrap {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.4rem 0.8rem;
+            transition: border-color 0.3s ease;
+        }
+        .search-filter-bar .search-wrap:focus-within {
+            border-color: var(--gold);
+        }
+        .search-filter-bar .search-wrap i {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        .search-filter-bar .search-wrap input {
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            padding: 0.4rem 0;
+            width: 100%;
+        }
+        .search-filter-bar .search-wrap input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-filter-bar .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-filter-bar .filter-group select {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.5rem 0.9rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease;
+            cursor: pointer;
+        }
+        .search-filter-bar .filter-group select:focus {
+            border-color: var(--gold);
+        }
+        .search-filter-bar .filter-group select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .btn-add-booking {
+            padding: 0.5rem 1.4rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            box-shadow: 0 4px 16px rgba(201, 169, 78, 0.15);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .btn-add-booking:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 169, 78, 0.25);
+        }
+        .btn-add-booking i {
+            font-size: 0.8rem;
+        }
+
+        .btn-clear-all {
+            padding: 0.5rem 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 10px;
+            background: rgba(231, 76, 60, 0.08);
+            color: #e74c3c;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+        .btn-clear-all:hover {
+            background: rgba(231, 76, 60, 0.18);
+            border-color: #e74c3c;
+            transform: scale(1.03);
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem 1.6rem;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .panel-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .panel-header .result-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        table th {
+            text-align: left;
+            padding: 0.6rem 0.4rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--card-border);
+            white-space: nowrap;
+        }
+        table td {
+            padding: 0.7rem 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            vertical-align: middle;
+        }
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ─── Clickable Row ─── */
+        table tr {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .booking-id {
+            font-weight: 600;
+            color: var(--gold-light);
+            font-size: 0.8rem;
+        }
+
+        .car-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .car-cell .thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #1a1818;
+            border: 1px solid var(--card-border);
+        }
+
+        .car-cell .info .name {
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .car-cell .info .type {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.confirmed {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+        .status-badge.pending {
+            background: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+        }
+        .status-badge.cancelled {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        .status-badge.completed {
+            background: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+        }
+
+        .price-cell {
+            font-weight: 600;
+            color: var(--gold-light);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btns button {
+            padding: 0.2rem 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+            position: relative;
+            z-index: 2;
+        }
+        .action-btns button:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btns .btn-view {
+            background: rgba(52, 152, 219, 0.12);
+            color: #3498db;
+        }
+        .action-btns .btn-view:hover {
+            background: rgba(52, 152, 219, 0.22);
+        }
+
+        .action-btns .btn-confirm {
+            background: rgba(46, 204, 113, 0.12);
+            color: #2ecc71;
+        }
+        .action-btns .btn-confirm:hover {
+            background: rgba(46, 204, 113, 0.22);
+        }
+
+        .action-btns .btn-cancel {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+        }
+        .action-btns .btn-cancel:hover {
+            background: rgba(231, 76, 60, 0.22);
+        }
+
+        .action-btns .btn-complete {
+            background: rgba(52, 152, 219, 0.12);
+            color: #3498db;
+        }
+        .action-btns .btn-complete:hover {
+            background: rgba(52, 152, 219, 0.22);
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+        }
+        .pagination .info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .pagination .pages {
+            display: flex;
+            gap: 0.3rem;
+        }
+        .pagination .pages button {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        .pagination .pages button:hover {
+            background: rgba(201, 169, 78, 0.06);
+            border-color: rgba(201, 169, 78, 0.15);
+        }
+        .pagination .pages button.active {
+            background: rgba(201, 169, 78, 0.10);
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-gold);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            color: var(--text-light);
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            max-width: 740px;
+            width: 100%;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.35s ease;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 1.8rem;
+            border-bottom: 1px solid var(--card-border);
+            flex-shrink: 0;
+        }
+        .modal-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .modal-header h2 span {
+            color: var(--gold);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 1.6rem 1.8rem 1.2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem 1.2rem;
+        }
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .form-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .form-group label .required {
+            color: var(--danger);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease;
+            width: 100%;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+        }
+        .form-group input:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-dim);
+        }
+        .form-group select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        /* ─── Verification Styles ─── */
+        .verification-group {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--card-border);
+            margin-bottom: 0.2rem;
+        }
+        .verification-group .verification-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+        }
+        .verification-group .verification-status .success {
+            color: var(--success);
+        }
+        .verification-group .verification-status .error {
+            color: var(--danger);
+        }
+        .verification-group .verification-status .pending {
+            color: #f1c40f;
+        }
+
+        .verification-group .aadhaar-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .verification-group .aadhaar-input-group input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .btn-verify-aadhaar {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-verify-aadhaar:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(46, 134, 193, 0.3);
+        }
+        .btn-verify-aadhaar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-verify-aadhaar.verified {
+            background: linear-gradient(135deg, var(--success-dark), var(--success));
+        }
+
+        .btn-send-otp {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6c3483, #8e44ad);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-send-otp:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(142, 68, 173, 0.3);
+        }
+        .btn-send-otp:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-send-otp.sent {
+            background: linear-gradient(135deg, var(--success-dark), var(--success));
+        }
+
+        .btn-verify-otp {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-verify-otp:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 169, 78, 0.3);
+        }
+        .btn-verify-otp:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-verify-otp.verified {
+            background: linear-gradient(135deg, var(--success-dark), var(--success));
+            color: #fff;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .otp-input-group input {
+            flex: 1;
+            min-width: 100px;
+            max-width: 160px;
+        }
+
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+        }
+        .verification-badge.pending {
+            background: rgba(241, 196, 15, 0.12);
+            color: #f1c40f;
+        }
+        .verification-badge.verified {
+            background: rgba(46, 204, 113, 0.12);
+            color: #2ecc71;
+        }
+        .verification-badge.failed {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+        }
+
+        .step-indicators {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1rem 1.2rem;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .step-indicators .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+        .step-indicators .step .num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--card-border);
+            font-weight: 700;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .step-indicators .step.active .num {
+            border-color: var(--gold);
+            background: var(--gold);
+            color: #0b0a0a;
+        }
+        .step-indicators .step.done .num {
+            border-color: var(--success);
+            background: var(--success);
+            color: #0b0a0a;
+        }
+        .step-indicators .step .label {
+            transition: color 0.3s ease;
+        }
+        .step-indicators .step.active .label {
+            color: var(--gold-light);
+        }
+        .step-indicators .step.done .label {
+            color: var(--text-muted);
+        }
+        .step-indicators .line {
+            width: 30px;
+            height: 2px;
+            background: var(--card-border);
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+        .step-indicators .line.done {
+            background: var(--success);
+        }
+
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 1rem 1.8rem 1.4rem;
+            border-top: 1px solid var(--card-border);
+            flex-shrink: 0;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .modal-footer button {
+            padding: 0.5rem 1.4rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .modal-footer .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+        }
+        .modal-footer .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-light);
+        }
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            box-shadow: 0 4px 16px rgba(201, 169, 78, 0.15);
+        }
+        .modal-footer .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 169, 78, 0.25);
+        }
+        .modal-footer .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .digilocker-modal .modal {
+            max-width: 520px;
+            text-align: center;
+        }
+        .digilocker-modal .digilocker-icon {
+            font-size: 4rem;
+            color: #1a5276;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .digilocker-modal .digilocker-icon i {
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .digilocker-modal h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+        .digilocker-modal p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        .digilocker-modal .digilocker-user {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            margin: 0.5rem 0 1rem;
+            border: 1px solid var(--card-border);
+        }
+        .digilocker-modal .digilocker-user .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0b0a0a;
+        }
+        .digilocker-modal .digilocker-user .info .name {
+            font-weight: 600;
+        }
+        .digilocker-modal .digilocker-user .info .detail {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .btn-digilocker-verify {
+            padding: 0.7rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            box-shadow: 0 4px 20px rgba(46, 134, 193, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-digilocker-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(46, 134, 193, 0.4);
+        }
+        .btn-digilocker-verify.verified {
+            background: linear-gradient(135deg, var(--success-dark), var(--success));
+        }
+
+        .btn-digilocker-cancel {
+            padding: 0.7rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .btn-digilocker-cancel:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .digilocker-modal .digilocker-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 1024px) {
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-filter-bar .filter-group {
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .hamburger {
+                display: block;
+            }
+            .main {
+                margin-left: 0;
+                padding: 1.2rem 1rem 2rem;
+            }
+            .topbar-left h2 {
+                font-size: 1.2rem;
+            }
+            .search-filter-bar {
+                padding: 0.8rem 1rem;
+            }
+            .search-filter-bar .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+            .search-filter-bar .filter-group select {
+                width: 100%;
+            }
+            .btn-add-booking,
+            .btn-clear-all {
+                width: 100%;
+                justify-content: center;
+            }
+            .panel {
+                padding: 1rem;
+            }
+            .action-btns {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .action-btns button {
+                width: 100%;
+                justify-content: center;
+            }
+            .pagination {
+                flex-direction: column;
+                align-items: center;
+            }
+            .modal {
+                max-height: 95vh;
+            }
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .verification-group .aadhaar-input-group,
+            .otp-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .verification-group .aadhaar-input-group input,
+            .otp-input-group input {
+                max-width: 100%;
+            }
+            .step-indicators {
+                flex-wrap: wrap;
+                gap: 0.3rem;
+            }
+            .step-indicators .step .label {
+                display: none;
+            }
+            .step-indicators .line {
+                width: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar-right .date-badge {
+                display: none;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+            .car-cell .thumb {
+                width: 24px;
+                height: 24px;
+            }
+            .digilocker-modal .digilocker-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .digilocker-modal .digilocker-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ─── Sidebar with Badges ─── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="icon">✦</span>
+            <div>
+                <h1>Dream Universe</h1>
+                <small>Admin Panel</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="admin dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="manage-cars.html" data-page="cars">
+                <i class="fas fa-car"></i> Cars
+                <span class="badge" id="carBadge">0</span>
+            </a>
+            <a href="bookings.html" data-page="bookings" class="active">
+                <i class="fas fa-calendar-check"></i> Bookings
+                <span class="badge" id="bookingBadge">0</span>
+            </a>
+            <a href="users.html" data-page="users">
+                <i class="fas fa-users"></i> Users
+                <span class="badge" id="userBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">Management</div>
+            <a href="payments.html" data-page="payments">
+                <i class="fas fa-credit-card"></i> Payments
+                <span class="badge" id="paymentBadge">0</span>
+            </a>
+            <a href="reports.html" data-page="reports">
+                <i class="fas fa-chart-line"></i> Reports
+            </a>
+            <a href="reviews.html" data-page="reviews">
+                <i class="fas fa-star"></i> Reviews
+                <span class="badge" id="reviewBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">System</div>
+            <a href="profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+            <a href="notifications.html" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge" id="notificationBadge">0</span>
+            </a>
+            <a href="logs.html" data-page="logs">
+                <i class="fas fa-history"></i> Logs
+            </a>
+            <a href="settings.html" data-page="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="avatar">AD</div>
+            <div class="info">
+                <div class="name" id="sidebarAdminName">Admin</div>
+                <div class="role">Super Admin</div>
+            </div>
+            <div class="logout" onclick="logoutUser();">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Manage Bookings <span>✦</span></h2>
+                <p>View, confirm, cancel, and manage all customer bookings.</p>
+            </div>
+            <div class="topbar-right">
+                <div class="date-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-filter-bar">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by car, customer, or booking ID..." />
+            </div>
+            <div class="filter-group">
+                <select id="filterStatus">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select id="filterDate">
+                    <option value="all">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+                <button class="btn-add-booking" onclick="openNewBookingModal()">
+                    <i class="fas fa-plus"></i> New Booking
+                </button>
+                <button class="btn-clear-all" onclick="clearAllBookings();">
+                    <i class="fas fa-trash-alt"></i> Clear All
+                </button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h3>All Bookings</h3>
+                <span class="result-count" id="resultCount">Showing 0 bookings</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Car</th>
+                            <th>Customer</th>
+                            <th>Dates</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Rendered by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span class="info" id="paginationInfo">Showing 0–0 of 0 bookings</span>
+                <div class="pages">
+                    <button onclick="changePage('prev')"><i class="fas fa-chevron-left"></i></button>
+                    <button class="active" data-page="1" onclick="goToPage(1)">1</button>
+                    <button onclick="changePage('next')"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:2rem;font-size:0.7rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--card-border);padding-top:1.5rem;">
+            &copy; 2026 Dream Universe Car Rentals — Admin Panel
+        </div>
+
+    </main>
+
+    <!-- ─── NEW BOOKING MODAL ─── -->
+    <div class="modal-overlay" id="newBookingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>New <span>Booking</span></h2>
+                <button class="modal-close" onclick="closeNewBookingModal()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="step-indicators" id="stepIndicators">
+                <div class="step active" data-step="1">
+                    <span class="num">1</span>
+                    <span class="label">Customer</span>
+                </div>
+                <div class="line" data-between="1-2"></div>
+                <div class="step" data-step="2">
+                    <span class="num">2</span>
+                    <span class="label">Aadhaar</span>
+                </div>
+                <div class="line" data-between="2-3"></div>
+                <div class="step" data-step="3">
+                    <span class="num">3</span>
+                    <span class="label">OTP</span>
+                </div>
+                <div class="line" data-between="3-4"></div>
+                <div class="step" data-step="4">
+                    <span class="num">4</span>
+                    <span class="label">Car &amp; Details</span>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="newBookingForm">
+                    <div id="stepContent1" class="step-content">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem;">
+                            <i class="fas fa-user-circle" style="color:var(--gold);"></i> Enter customer details
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <label for="bookingCustomer">Customer Name <span class="required">*</span></label>
+                                <input type="text" id="bookingCustomer" placeholder="e.g. Rahul Sharma" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingEmail">Email <span class="required">*</span></label>
+                                <input type="email" id="bookingEmail" placeholder="customer@email.com" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingPhone">Mobile Number <span class="required">*</span></label>
+                                <input type="text" id="bookingPhone" placeholder="+91 98765 43210" required />
+                            </div>
+                        </div>
+                        <div style="text-align:right;margin-top:0.5rem;">
+                            <button type="button" class="btn-primary" onclick="goToStep(2)" style="padding:0.4rem 1.2rem;font-size:0.75rem;border:none;border-radius:8px;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:#0b0a0a;cursor:pointer;">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="stepContent2" class="step-content" style="display:none;">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem;">
+                            <i class="fas fa-id-card" style="color:var(--gold);"></i> Verify identity via Aadhaar
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <div class="verification-group">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">
+                                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);font-weight:600;">
+                                            Aadhaar Number <span class="required">*</span>
+                                        </label>
+                                        <span class="verification-badge pending" id="aadhaarStatusBadge">
+                                            <i class="fas fa-clock"></i> Pending
+                                        </span>
+                                    </div>
+                                    <div class="aadhaar-input-group">
+                                        <input type="text" id="bookingAadhaar" placeholder="Enter 12-digit Aadhaar Number" maxlength="12" pattern="[0-9]{12}" />
+                                        <button class="btn-verify-aadhaar" id="verifyAadhaarBtn" onclick="verifyWithDigiLocker()">
+                                            <i class="fas fa-id-card"></i> Verify with DigiLocker
+                                        </button>
+                                    </div>
+                                    <div class="verification-status" id="aadhaarStatus">
+                                        <span class="pending"><i class="fas fa-info-circle"></i> Aadhaar verification required.</span>
+                                    </div>
+                                    <input type="hidden" id="aadhaarVerified" value="false" />
+                                    <input type="hidden" id="aadhaarNumber" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                            <button type="button" onclick="goToStep(1)" style="padding:0.4rem 1.2rem;font-size:0.75rem;border:1px solid var(--card-border);border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;">
+                                <i class="fas fa-chevron-left"></i> Back
+                            </button>
+                            <button type="button" class="btn-primary" onclick="goToStep(3)" style="padding:0.4rem 1.2rem;font-size:0.75rem;border:none;border-radius:8px;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:#0b0a0a;cursor:pointer;" id="step2NextBtn" disabled>
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="stepContent3" class="step-content" style="display:none;">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem;">
+                            <i class="fas fa-sms" style="color:var(--gold);"></i> Verify via OTP sent to mobile
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <div class="verification-group">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">
+                                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);font-weight:600;">
+                                            OTP Verification <span class="required">*</span>
+                                        </label>
+                                        <span class="verification-badge pending" id="otpStatusBadge">
+                                            <i class="fas fa-clock"></i> Pending
+                                        </span>
+                                    </div>
+                                    <div class="otp-input-group">
+                                        <input type="text" id="bookingOtp" placeholder="Enter 4-digit OTP" maxlength="4" pattern="[0-9]{4}" disabled />
+                                        <button class="btn-send-otp" id="sendOtpBtn" onclick="sendOTP()" disabled>
+                                            <i class="fas fa-sms"></i> Send OTP
+                                        </button>
+                                        <button class="btn-verify-otp" id="verifyOtpBtn" onclick="verifyOTP()" disabled>
+                                            <i class="fas fa-check"></i> Verify OTP
+                                        </button>
+                                    </div>
+                                    <div class="verification-status" id="otpStatus">
+                                        <span class="pending"><i class="fas fa-info-circle"></i> Please verify Aadhaar first.</span>
+                                    </div>
+                                    <input type="hidden" id="otpVerified" value="false" />
+                                    <input type="hidden" id="otpCode" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                            <button type="button" onclick="goToStep(2)" style="padding:0.4rem 1.2rem;font-size:0.75rem;border:1px solid var(--card-border);border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;">
+                                <i class="fas fa-chevron-left"></i> Back
+                            </button>
+                            <button type="button" class="btn-primary" onclick="goToStep(4)" style="padding:0.4rem 1.2rem;font-size:0.75rem;border:none;border-radius:8px;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:#0b0a0a;cursor:pointer;" id="step3NextBtn" disabled>
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="stepContent4" class="step-content" style="display:none;">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem;">
+                            <i class="fas fa-car" style="color:var(--gold);"></i> Select car and finalize booking
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <label for="bookingCar">Select Car <span class="required">*</span></label>
+                                <select id="bookingCar" required>
+                                    <option value="">— Select a Car —</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingPickup">Pickup Date &amp; Time <span class="required">*</span></label>
+                                <input type="datetime-local" id="bookingPickup" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingDropoff">Dropoff Date &amp; Time <span class="required">*</span></label>
+                                <input type="datetime-local" id="bookingDropoff" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingDailyRate">Daily Rate (₹) <span class="required">*</span></label>
+                                <input type="number" id="bookingDailyRate" placeholder="4800" min="100" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingAmount">Total Amount (₹) <span class="required">*</span></label>
+                                <input type="number" id="bookingAmount" placeholder="14400" min="0" required />
+                            </div>
+                            <div class="form-group full">
+                                <label for="bookingAddons">Add-ons (comma-separated, e.g. GPS:500, Child Seat:300)</label>
+                                <input type="text" id="bookingAddons" placeholder="GPS:500, Child Seat:300" />
+                            </div>
+                            <div class="form-group full">
+                                <label for="bookingNotes">Admin Notes</label>
+                                <textarea id="bookingNotes" placeholder="Any special instructions or notes..."></textarea>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                            <button type="button" onclick="goToStep(3)" style="padding:0.4rem 1.2rem;font-size:0.75rem;border:1px solid var(--card-border);border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;">
+                                <i class="fas fa-chevron-left"></i> Back
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeNewBookingModal()">Cancel</button>
+                <button class="btn-primary" id="submitBookingBtn" onclick="submitNewBooking()" disabled>
+                    <i class="fas fa-plus"></i> Create Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay digilocker-modal" id="digilockerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><span>DigiLocker</span> Verification</h2>
+                <button class="modal-close" onclick="closeDigiLocker()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <span class="digilocker-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+                <h3>Verify Aadhaar via DigiLocker</h3>
+                <p>Your Aadhaar details will be securely fetched from DigiLocker for verification.</p>
+                <div class="digilocker-user">
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div class="info">
+                        <div class="name" id="digilockerName">Rahul Sharma</div>
+                        <div class="detail" id="digilockerAadhaar">Aadhaar: XXXX XXXX 1234</div>
+                    </div>
+                </div>
+                <div style="margin:1rem 0;padding:0.8rem;background:rgba(46,204,113,0.05);border-radius:10px;border:1px solid rgba(46,204,113,0.1);">
+                    <i class="fas fa-shield-alt" style="color:var(--success);margin-right:0.5rem;"></i>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">DigiLocker is securely fetching your Aadhaar details...</span>
+                </div>
+                <div class="digilocker-actions">
+                    <button class="btn-digilocker-cancel" onclick="closeDigiLocker()">Cancel</button>
+                    <button class="btn-digilocker-verify" id="digilockerVerifyBtn" onclick="confirmDigiLockerVerification()">
+                        <i class="fas fa-check-circle"></i> Verify &amp; Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DATA STORE ───
+            const BOOKINGS_KEY = 'dreamUniverseBookings';
+            const CARS_KEY = 'dreamUniverseCars';
+            let bookingsData = [];
+            let filteredBookings = [];
+            let currentPage = 1;
+            const itemsPerPage = 6;
+
+            // ─── OTP & Verification State ───
+            let aadhaarVerified = false;
+            let aadhaarNumber = '';
+            let otpSent = false;
+            let otpVerified = false;
+            let generatedOtp = '';
+            let currentStep = 1;
+
+            // ─── LOAD DATA ───
+            function loadBookings() {
+                const stored = localStorage.getItem(BOOKINGS_KEY);
+                if (stored) {
+                    try {
+                        bookingsData = JSON.parse(stored);
+                        return;
+                    } catch (e) {}
+                }
+                bookingsData = [];
+                localStorage.setItem(BOOKINGS_KEY, JSON.stringify([]));
+            }
+
+            function saveBookings() {
+                localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookingsData));
+            }
+
+            function loadCars() {
+                const stored = localStorage.getItem(CARS_KEY);
+                if (stored) {
+                    try {
+                        return JSON.parse(stored);
+                    } catch (e) {}
+                }
+                return [];
+            }
+
+            // ─── CLEAR ALL BOOKINGS ───
+            window.clearAllBookings = function() {
+                if (bookingsData.length === 0) {
+                    showToast('ℹ️ No bookings to clear.');
+                    return;
+                }
+                if (confirm('⚠️ Are you sure you want to delete ALL bookings? This action cannot be undone.')) {
+                    bookingsData = [];
+                    localStorage.setItem(BOOKINGS_KEY, JSON.stringify([]));
+                    applyFilters();
+                    showToast('🗑️ All bookings have been removed.');
+                }
+            };
+
+            // ─── TOAST ───
+            let toastTimeout;
+            window.showToast = function(msg) {
+                const el = document.getElementById('toast');
+                if (!el) return;
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(function() {
+                    el.classList.remove('show');
+                }, 2800);
+            };
+
+            // ─── LOGOUT ───
+            window.logoutUser = function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    showToast('👋 Logged out');
+                    window.location.href = 'login.html';
+                }
+            };
+
+            // ─── DATE ───
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('en-IN', options);
+            }
+
+            // ─── UPDATE ALL BADGES ───
+            function updateAllBadges() {
+                try {
+                    const cars = JSON.parse(localStorage.getItem('dreamUniverseCars') || '[]');
+                    const badge = document.getElementById('carBadge');
+                    if (badge) badge.textContent = cars.length;
+                } catch (e) {}
+
+                try {
+                    const bookings = JSON.parse(localStorage.getItem('dreamUniverseBookings') || '[]');
+                    const badge = document.getElementById('bookingBadge');
+                    if (badge) badge.textContent = bookings.length;
+                } catch (e) {}
+
+                try {
+                    const users = JSON.parse(localStorage.getItem('dreamUniverseUsers') || '[]');
+                    const badge = document.getElementById('userBadge');
+                    if (badge) badge.textContent = users.length;
+                } catch (e) {}
+
+                try {
+                    const payments = JSON.parse(localStorage.getItem('dreamUniversePayments') || '[]');
+                    const badge = document.getElementById('paymentBadge');
+                    if (badge) badge.textContent = payments.length;
+                } catch (e) {}
+
+                try {
+                    const reviews = JSON.parse(localStorage.getItem('dreamUniverseReviews') || '[]');
+                    const badge = document.getElementById('reviewBadge');
+                    if (badge) badge.textContent = reviews.length;
+                } catch (e) {}
+
+                try {
+                    const notifications = JSON.parse(localStorage.getItem('dreamUniverseNotifications') || '[]');
+                    const unread = notifications.filter(function(n) { return !n.read; }).length;
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) badge.textContent = unread;
+                } catch (e) {}
+            }
+
+            // ─── SIDEBAR TOGGLE ───
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // ─── RENDER BOOKINGS (with clickable rows) ───
+            function renderBookings() {
+                const tbody = document.getElementById('bookingsTableBody');
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = Math.min(start + itemsPerPage, filteredBookings.length);
+                const pageBookings = filteredBookings.slice(start, end);
+
+                if (pageBookings.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align:center;padding:2.5rem 1rem;color:var(--text-muted);">
+                                <i class="fas fa-calendar-plus" style="font-size:2.5rem;display:block;margin-bottom:0.8rem;color:var(--text-dim);"></i>
+                                <h4 style="font-family:'Playfair Display',serif;font-weight:600;font-size:1.1rem;color:var(--text-light);margin-bottom:0.3rem;">No Bookings Yet</h4>
+                                <p style="font-size:0.85rem;">Click "New Booking" to create your first booking.</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = pageBookings.map(function(b) {
+                        const statusClass = b.status || 'pending';
+                        return `
+                        <tr onclick="viewBooking('${b.id}')" style="cursor:pointer;">
+                            <td><span class="booking-id">#${b.id}</span></td>
+                            <td>
+                                <div class="car-cell">
+                                    <img class="thumb" src="${b.image || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=80&q=80'}" alt="${b.car}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%231a1818%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23555%22 text-anchor=%22middle%22 dy=%22.3em%22%3E🚗%3C/text%3E%3C/svg%3E'" />
+                                    <div class="info">
+                                        <div class="name">${b.car}</div>
+                                        <div class="type">${b.carType || 'N/A'}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${b.customer}</td>
+                            <td>${b.dates || 'N/A'}</td>
+                            <td class="price-cell">₹${(b.amount || 0).toLocaleString()}</td>
+                            <td><span class="status-badge ${statusClass}">${statusClass}</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn-view" onclick="event.stopPropagation();viewBooking('${b.id}')"><i class="fas fa-eye"></i> View</button>
+                                    ${b.status === 'pending' ? `<button class="btn-confirm" onclick="event.stopPropagation();confirmBooking('${b.id}')"><i class="fas fa-check"></i> Confirm</button>` : ''}
+                                    ${b.status === 'pending' || b.status === 'confirmed' ? `<button class="btn-cancel" onclick="event.stopPropagation();cancelBooking('${b.id}')"><i class="fas fa-times"></i> Cancel</button>` : ''}
+                                    ${b.status === 'confirmed' ? `<button class="btn-complete" onclick="event.stopPropagation();completeBooking('${b.id}')"><i class="fas fa-flag-checkered"></i> Complete</button>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    }).join('');
+                }
+
+                const total = filteredBookings.length;
+                document.getElementById('resultCount').textContent = 'Showing ' + total + ' booking' + (total !== 1 ?
+                    's' : '');
+                // Update booking badge
+                const badge = document.getElementById('bookingBadge');
+                if (badge) badge.textContent = total;
+
+                document.getElementById('paginationInfo').textContent =
+                    'Showing ' + (total > 0 ? start + 1 : 0) + '–' + Math.min(end, total) + ' of ' + total +
+                    ' booking' + (total !== 1 ? 's' : '');
+
+                const totalPages = Math.ceil(total / itemsPerPage);
+                var pageBtns = document.querySelectorAll('.pagination .pages button[data-page]');
+                pageBtns.forEach(function(btn) {
+                    var page = parseInt(btn.dataset.page);
+                    if (page > totalPages || totalPages === 0) {
+                        btn.style.display = 'none';
+                    } else {
+                        btn.style.display = 'inline-block';
+                        if (page === currentPage) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    }
+                });
+
+                var prevBtn = document.querySelector('.pagination .pages button:first-child');
+                var nextBtn = document.querySelector('.pagination .pages button:last-child');
+                if (prevBtn) prevBtn.style.display = currentPage > 1 ? 'inline-block' : 'none';
+                if (nextBtn) nextBtn.style.display = currentPage < totalPages ? 'inline-block' : 'none';
+            }
+
+            // ─── FILTERS ───
+            function applyFilters() {
+                var searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+                var statusFilter = document.getElementById('filterStatus').value;
+                var dateFilter = document.getElementById('filterDate').value;
+
+                filteredBookings = bookingsData.filter(function(b) {
+                    var matchSearch = b.id.toLowerCase().includes(searchTerm) ||
+                        b.car.toLowerCase().includes(searchTerm) ||
+                        b.customer.toLowerCase().includes(searchTerm);
+                    var matchStatus = statusFilter === 'all' || b.status === statusFilter;
+
+                    var matchDate = true;
+                    if (dateFilter === 'today') {
+                        var today = new Date().toDateString();
+                        matchDate = b.createdAt === today;
+                    } else if (dateFilter === 'week') {
+                        if (b.createdAt) {
+                            const created = new Date(b.createdAt);
+                            const now = new Date();
+                            const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+                            matchDate = diffDays <= 7;
+                        } else {
+                            matchDate = false;
+                        }
+                    } else if (dateFilter === 'month') {
+                        if (b.createdAt) {
+                            const created = new Date(b.createdAt);
+                            const now = new Date();
+                            matchDate = (created.getMonth() === now.getMonth() && created.getFullYear() === now
+                                .getFullYear());
+                        } else {
+                            matchDate = false;
+                        }
+                    }
+                    return matchSearch && matchStatus && matchDate;
+                });
+
+                currentPage = 1;
+                renderBookings();
+            }
+
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('filterStatus').addEventListener('change', applyFilters);
+            document.getElementById('filterDate').addEventListener('change', applyFilters);
+
+            // ─── PAGINATION ───
+            window.goToPage = function(page) {
+                var totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+                if (page < 1 || page > totalPages) return;
+                currentPage = page;
+                renderBookings();
+            };
+
+            window.changePage = function(direction) {
+                var totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+                if (direction === 'prev' && currentPage > 1) currentPage--;
+                if (direction === 'next' && currentPage < totalPages) currentPage++;
+                renderBookings();
+            };
+
+            // ─── ACTIONS ───
+            window.viewBooking = function(id) {
+                window.location.href = 'booking-detail.html?id=' + id;
+            };
+
+            window.confirmBooking = function(id) {
+                var booking = bookingsData.find(function(b) { return b.id === id; });
+                if (!booking) return;
+                if (confirm('Confirm booking #' + id + ' for ' + booking.car + '?')) {
+                    booking.status = 'confirmed';
+                    if (!booking.timeline) booking.timeline = [];
+                    const now = new Date();
+                    booking.timeline.push({
+                        time: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short',
+                            year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit',
+                            minute: '2-digit' }),
+                        icon: 'fa-check-circle',
+                        event: 'Booking confirmed by admin'
+                    });
+                    saveBookings();
+                    applyFilters();
+                    showToast('✅ Booking #' + id + ' confirmed!');
+                }
+            };
+
+            window.cancelBooking = function(id) {
+                var booking = bookingsData.find(function(b) { return b.id === id; });
+                if (!booking) return;
+                if (confirm('Cancel booking #' + id + ' for ' + booking.car + '? This action cannot be undone.')) {
+                    booking.status = 'cancelled';
+                    if (!booking.timeline) booking.timeline = [];
+                    const now = new Date();
+                    booking.timeline.push({
+                        time: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short',
+                            year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit',
+                            minute: '2-digit' }),
+                        icon: 'fa-times-circle',
+                        event: 'Booking cancelled by admin'
+                    });
+                    saveBookings();
+                    applyFilters();
+                    showToast('❌ Booking #' + id + ' cancelled.');
+                }
+            };
+
+            window.completeBooking = function(id) {
+                var booking = bookingsData.find(function(b) { return b.id === id; });
+                if (!booking) return;
+                if (confirm('Mark booking #' + id + ' for ' + booking.car + ' as completed?')) {
+                    booking.status = 'completed';
+                    if (!booking.timeline) booking.timeline = [];
+                    const now = new Date();
+                    booking.timeline.push({
+                        time: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short',
+                            year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit',
+                            minute: '2-digit' }),
+                        icon: 'fa-flag-checkered',
+                        event: 'Booking marked as completed'
+                    });
+                    saveBookings();
+                    applyFilters();
+                    showToast('🏁 Booking #' + id + ' marked as completed.');
+                }
+            };
+
+            // ─── STEP NAVIGATION ───
+            function updateSteps() {
+                const steps = document.querySelectorAll('.step-indicators .step');
+                const lines = document.querySelectorAll('.step-indicators .line');
+                const contents = document.querySelectorAll('.step-content');
+
+                steps.forEach(function(step, idx) {
+                    const num = idx + 1;
+                    step.classList.remove('active', 'done');
+                    if (num === currentStep) {
+                        step.classList.add('active');
+                    } else if (num < currentStep) {
+                        step.classList.add('done');
+                    }
+                });
+
+                lines.forEach(function(line, idx) {
+                    const num = idx + 1;
+                    line.classList.toggle('done', num < currentStep);
+                });
+
+                contents.forEach(function(content) {
+                    const stepNum = parseInt(content.id.replace('stepContent', ''));
+                    content.style.display = (stepNum === currentStep) ? 'block' : 'none';
+                });
+
+                const submitBtn = document.getElementById('submitBookingBtn');
+                if (currentStep === 4) {
+                    submitBtn.style.display = 'inline-flex';
+                } else {
+                    submitBtn.style.display = 'none';
+                }
+            }
+
+            window.goToStep = function(step) {
+                if (step > currentStep) {
+                    if (currentStep === 1) {
+                        const name = document.getElementById('bookingCustomer').value.trim();
+                        const email = document.getElementById('bookingEmail').value.trim();
+                        const phone = document.getElementById('bookingPhone').value.trim();
+                        if (!name || !email || !phone) {
+                            showToast('⚠️ Please fill in all customer details.');
+                            return;
+                        }
+                        if (!email.includes('@')) {
+                            showToast('⚠️ Please enter a valid email address.');
+                            return;
+                        }
+                        if (phone.replace(/\D/g, '').length < 10) {
+                            showToast('⚠️ Please enter a valid 10-digit mobile number.');
+                            return;
+                        }
+                    }
+                    if (currentStep === 2) {
+                        if (!aadhaarVerified) {
+                            showToast('⚠️ Please verify Aadhaar first.');
+                            return;
+                        }
+                    }
+                    if (currentStep === 3) {
+                        if (!otpVerified) {
+                            showToast('⚠️ Please verify OTP first.');
+                            return;
+                        }
+                    }
+                }
+
+                currentStep = Math.min(Math.max(step, 1), 4);
+                updateSteps();
+
+                document.getElementById('step2NextBtn').disabled = !aadhaarVerified;
+                document.getElementById('step3NextBtn').disabled = !otpVerified;
+
+                if (currentStep === 4) {
+                    document.getElementById('submitBookingBtn').disabled = false;
+                } else {
+                    document.getElementById('submitBookingBtn').disabled = true;
+                }
+
+                if (currentStep === 4) {
+                    populateCarDropdown();
+                }
+            };
+
+            function populateCarDropdown() {
+                const carSelect = document.getElementById('bookingCar');
+                if (carSelect.options.length > 1) return;
+                const cars = loadCars();
+                carSelect.innerHTML = '<option value="">— Select a Car —</option>';
+                cars.forEach(function(car) {
+                    const option = document.createElement('option');
+                    option.value = car.id;
+                    option.textContent = car.name + ' (' + car.type + ')';
+                    carSelect.appendChild(option);
+                });
+            }
+
+            // ─── AADHAAR VERIFICATION ───
+            window.verifyWithDigiLocker = function() {
+                const aadhaarInput = document.getElementById('bookingAadhaar');
+                const aadhaar = aadhaarInput.value.trim().replace(/\s/g, '');
+
+                if (!/^[0-9]{12}$/.test(aadhaar)) {
+                    showToast('⚠️ Please enter a valid 12-digit Aadhaar number.');
+                    aadhaarInput.focus();
+                    return;
+                }
+
+                aadhaarNumber = aadhaar;
+                document.getElementById('digilockerModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                const displayAadhaar = 'XXXX XXXX ' + aadhaar.slice(-4);
+                document.getElementById('digilockerAadhaar').textContent = 'Aadhaar: ' + displayAadhaar;
+
+                const customerName = document.getElementById('bookingCustomer').value.trim() || 'Customer';
+                document.getElementById('digilockerName').textContent = customerName;
+            };
+
+            window.closeDigiLocker = function() {
+                document.getElementById('digilockerModal').classList.remove('active');
+                document.body.style.overflow = '';
+            };
+
+            window.confirmDigiLockerVerification = function() {
+                const btn = document.getElementById('digilockerVerifyBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+                setTimeout(function() {
+                    aadhaarVerified = true;
+                    document.getElementById('aadhaarVerified').value = 'true';
+                    document.getElementById('aadhaarNumber').value = aadhaarNumber;
+
+                    const statusBadge = document.getElementById('aadhaarStatusBadge');
+                    statusBadge.className = 'verification-badge verified';
+                    statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
+
+                    const statusMsg = document.getElementById('aadhaarStatus');
+                    statusMsg.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> Aadhaar verified successfully via DigiLocker.</span>';
+
+                    const verifyBtn = document.getElementById('verifyAadhaarBtn');
+                    verifyBtn.className = 'btn-verify-aadhaar verified';
+                    verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verified ✓';
+                    verifyBtn.disabled = true;
+
+                    document.getElementById('step2NextBtn').disabled = false;
+
+                    document.getElementById('sendOtpBtn').disabled = false;
+                    document.getElementById('bookingOtp').disabled = false;
+
+                    document.getElementById('otpStatus').innerHTML =
+                        '<span class="pending"><i class="fas fa-info-circle"></i> Click "Send OTP" to receive a verification code on your mobile.</span>';
+
+                    closeDigiLocker();
+                    showToast('✅ Aadhaar verified successfully via DigiLocker!');
+
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Continue';
+
+                    if (currentStep === 2) {
+                        setTimeout(function() {
+                            goToStep(3);
+                        }, 800);
+                    }
+                }, 2000);
+            };
+
+            // ─── OTP FUNCTIONS ───
+            window.sendOTP = function() {
+                if (!aadhaarVerified) {
+                    showToast('⚠️ Please verify Aadhaar first.');
+                    return;
+                }
+
+                const phone = document.getElementById('bookingPhone').value.trim();
+                if (!phone || phone.replace(/\D/g, '').length < 10) {
+                    showToast('⚠️ Please enter a valid mobile number.');
+                    return;
+                }
+
+                generatedOtp = String(Math.floor(1000 + Math.random() * 9000));
+                otpSent = true;
+                document.getElementById('otpCode').value = generatedOtp;
+
+                const sendBtn = document.getElementById('sendOtpBtn');
+                sendBtn.className = 'btn-send-otp sent';
+                sendBtn.innerHTML = '<i class="fas fa-check"></i> OTP Sent ✓';
+                sendBtn.disabled = true;
+
+                const otpStatus = document.getElementById('otpStatus');
+                otpStatus.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> OTP sent to ' +
+                    phone + '. Please check your SMS.';
+
+                document.getElementById('verifyOtpBtn').disabled = false;
+                document.getElementById('bookingOtp').disabled = false;
+                document.getElementById('bookingOtp').focus();
+
+                const otpBadge = document.getElementById('otpStatusBadge');
+                otpBadge.className = 'verification-badge pending';
+                otpBadge.innerHTML = '<i class="fas fa-clock"></i> OTP Sent';
+
+                showToast('📱 OTP sent to ' + phone + ' (Demo OTP: ' + generatedOtp + ')');
+            };
+
+            window.verifyOTP = function() {
+                const otpInput = document.getElementById('bookingOtp');
+                const enteredOtp = otpInput.value.trim();
+
+                if (!enteredOtp || enteredOtp.length !== 4) {
+                    showToast('⚠️ Please enter a valid 4-digit OTP.');
+                    otpInput.focus();
+                    return;
+                }
+
+                if (!otpSent) {
+                    showToast('⚠️ Please request an OTP first.');
+                    return;
+                }
+
+                if (enteredOtp === generatedOtp) {
+                    otpVerified = true;
+                    document.getElementById('otpVerified').value = 'true';
+
+                    const verifyBtn = document.getElementById('verifyOtpBtn');
+                    verifyBtn.className = 'btn-verify-otp verified';
+                    verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verified ✓';
+                    verifyBtn.disabled = true;
+
+                    const otpBadge = document.getElementById('otpStatusBadge');
+                    otpBadge.className = 'verification-badge verified';
+                    otpBadge.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
+
+                    const otpStatus = document.getElementById('otpStatus');
+                    otpStatus.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> OTP verified successfully!</span>';
+
+                    document.getElementById('step3NextBtn').disabled = false;
+                    showToast('✅ OTP verified successfully!');
+
+                    setTimeout(function() {
+                        goToStep(4);
+                    }, 600);
+                } else {
+                    showToast('❌ Invalid OTP. Please try again.');
+                    otpInput.value = '';
+                    otpInput.focus();
+                }
+            };
+
+            // ─── AUTO-CALCULATE TOTAL ───
+            function calculateTotal() {
+                const dailyRate = parseFloat(document.getElementById('bookingDailyRate').value);
+                const pickup = document.getElementById('bookingPickup').value;
+                const dropoff = document.getElementById('bookingDropoff').value;
+                if (dailyRate && pickup && dropoff) {
+                    const start = new Date(pickup);
+                    const end = new Date(dropoff);
+                    if (end > start) {
+                        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                        const total = dailyRate * diffDays;
+                        document.getElementById('bookingAmount').value = total;
+                    }
+                }
+            }
+
+            // ─── NEW BOOKING MODAL ───
+            function openNewBookingModal() {
+                aadhaarVerified = false;
+                aadhaarNumber = '';
+                otpSent = false;
+                otpVerified = false;
+                generatedOtp = '';
+                currentStep = 1;
+
+                const modal = document.getElementById('newBookingModal');
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                document.getElementById('newBookingForm').reset();
+                document.getElementById('aadhaarVerified').value = 'false';
+                document.getElementById('aadhaarNumber').value = '';
+                document.getElementById('otpVerified').value = 'false';
+                document.getElementById('otpCode').value = '';
+
+                document.getElementById('aadhaarStatusBadge').className = 'verification-badge pending';
+                document.getElementById('aadhaarStatusBadge').innerHTML = '<i class="fas fa-clock"></i> Pending';
+                document.getElementById('aadhaarStatus').innerHTML =
+                    '<span class="pending"><i class="fas fa-info-circle"></i> Aadhaar verification required.</span>';
+                const verifyBtn = document.getElementById('verifyAadhaarBtn');
+                verifyBtn.className = 'btn-verify-aadhaar';
+                verifyBtn.innerHTML = '<i class="fas fa-id-card"></i> Verify with DigiLocker';
+                verifyBtn.disabled = false;
+
+                document.getElementById('otpStatusBadge').className = 'verification-badge pending';
+                document.getElementById('otpStatusBadge').innerHTML = '<i class="fas fa-clock"></i> Pending';
+                document.getElementById('otpStatus').innerHTML =
+                    '<span class="pending"><i class="fas fa-info-circle"></i> Please verify Aadhaar first.</span>';
+                document.getElementById('sendOtpBtn').className = 'btn-send-otp';
+                document.getElementById('sendOtpBtn').innerHTML = '<i class="fas fa-sms"></i> Send OTP';
+                document.getElementById('sendOtpBtn').disabled = true;
+                document.getElementById('verifyOtpBtn').className = 'btn-verify-otp';
+                document.getElementById('verifyOtpBtn').innerHTML = '<i class="fas fa-check"></i> Verify OTP';
+                document.getElementById('verifyOtpBtn').disabled = true;
+                document.getElementById('bookingOtp').value = '';
+                document.getElementById('bookingOtp').disabled = true;
+                document.getElementById('step2NextBtn').disabled = true;
+                document.getElementById('step3NextBtn').disabled = true;
+
+                const carSelect = document.getElementById('bookingCar');
+                carSelect.innerHTML = '<option value="">— Select a Car —</option>';
+
+                const now = new Date();
+                const pickup = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+                const dropoff = new Date(pickup.getTime() + 3 * 24 * 60 * 60 * 1000);
+                document.getElementById('bookingPickup').value = pickup.toISOString().slice(0, 16);
+                document.getElementById('bookingDropoff').value = dropoff.toISOString().slice(0, 16);
+
+                document.getElementById('bookingDailyRate').addEventListener('input', calculateTotal);
+                document.getElementById('bookingPickup').addEventListener('change', calculateTotal);
+                document.getElementById('bookingDropoff').addEventListener('change', calculateTotal);
+
+                document.getElementById('bookingAadhaar').addEventListener('input', function() {
+                    this.value = this.value.replace(/\D/g, '');
+                });
+
+                document.getElementById('bookingPhone').addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9+\s-]/g, '');
+                });
+
+                const submitBtn = document.getElementById('submitBookingBtn');
+                submitBtn.disabled = true;
+                submitBtn.style.display = 'none';
+                submitBtn.innerHTML = '<i class="fas fa-plus"></i> Create Booking';
+
+                updateSteps();
+            }
+
+            window.closeNewBookingModal = function() {
+                const modal = document.getElementById('newBookingModal');
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+
+            document.getElementById('newBookingModal').addEventListener('click', function(e) {
+                if (e.target === this) closeNewBookingModal();
+            });
+
+            // ─── SUBMIT NEW BOOKING ───
+            window.submitNewBooking = function() {
+                if (!aadhaarVerified) {
+                    showToast('⚠️ Please verify Aadhaar first.');
+                    return;
+                }
+                if (!otpVerified) {
+                    showToast('⚠️ Please verify OTP first.');
+                    return;
+                }
+
+                const customer = document.getElementById('bookingCustomer').value.trim();
+                const email = document.getElementById('bookingEmail').value.trim();
+                const phone = document.getElementById('bookingPhone').value.trim();
+                const carId = document.getElementById('bookingCar').value;
+                const pickup = document.getElementById('bookingPickup').value;
+                const dropoff = document.getElementById('bookingDropoff').value;
+                const dailyRate = parseFloat(document.getElementById('bookingDailyRate').value);
+                const amount = parseFloat(document.getElementById('bookingAmount').value);
+                const addonsText = document.getElementById('bookingAddons').value.trim();
+                const notes = document.getElementById('bookingNotes').value.trim();
+
+                if (!customer || !email || !phone || !carId || !pickup || !dropoff || !dailyRate || !amount) {
+                    showToast('⚠️ Please fill in all required fields.');
+                    return;
+                }
+
+                const cars = loadCars();
+                const selectedCar = cars.find(function(c) { return c.id == carId; });
+                if (!selectedCar) {
+                    showToast('⚠️ Please select a valid car.');
+                    return;
+                }
+
+                var addons = [];
+                if (addonsText) {
+                    addonsText.split(',').forEach(function(item) {
+                        var parts = item.trim().split(':');
+                        if (parts.length === 2) {
+                            var name = parts[0].trim();
+                            var price = parseFloat(parts[1].trim());
+                            if (name && !isNaN(price) && price > 0) {
+                                addons.push({ name: name, price: price });
+                            }
+                        }
+                    });
+                }
+
+                const id = 'BK-' + Date.now().toString().slice(-6);
+                const now = new Date();
+                const createdAt = now.toDateString();
+
+                const newBooking = {
+                    id: id,
+                    customer: customer,
+                    customerEmail: email,
+                    customerPhone: phone,
+                    aadhaarNumber: aadhaarNumber,
+                    car: selectedCar.name,
+                    carType: selectedCar.type,
+                    transmission: selectedCar.transmission || 'Automatic',
+                    seats: selectedCar.seats || 5,
+                    image: selectedCar.image || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=200&q=80',
+                    dailyRate: dailyRate,
+                    pickupDate: pickup,
+                    dropoffDate: dropoff,
+                    amount: amount,
+                    status: 'pending',
+                    paymentMethod: 'Pending',
+                    transactionId: 'TXN-' + id,
+                    createdAt: createdAt,
+                    addons: addons,
+                    adminNotes: notes,
+                    aadhaarVerified: true,
+                    otpVerified: true,
+                    timeline: [
+                        {
+                            time: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short',
+                                year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit',
+                                minute: '2-digit' }),
+                            icon: 'fa-plus-circle',
+                            event: 'Booking created (Aadhaar & OTP verified)'
+                        }
+                    ],
+                    dates: new Date(pickup).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) +
+                        ' → ' + new Date(dropoff).toLocaleDateString('en-IN', { day: 'numeric',
+                            month: 'short', year: 'numeric' })
+                };
+
+                bookingsData.push(newBooking);
+                saveBookings();
+                closeNewBookingModal();
+                applyFilters();
+                updateAllBadges();
+                showToast('✅ New booking #' + id + ' created successfully!');
+            };
+
+            // ─── INIT ───
+            loadBookings();
+            applyFilters();
+            updateAllBadges();
+
+            // Listen for storage changes from other tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key && e.key.startsWith('dreamUniverse')) {
+                    updateAllBadges();
+                }
+            });
+
+            // Expose functions for inline onclick
+            window.openNewBookingModal = openNewBookingModal;
+            window.closeNewBookingModal = closeNewBookingModal;
+            window.submitNewBooking = submitNewBooking;
+            window.verifyWithDigiLocker = verifyWithDigiLocker;
+            window.closeDigiLocker = closeDigiLocker;
+            window.confirmDigiLockerVerification = confirmDigiLockerVerification;
+            window.sendOTP = sendOTP;
+            window.verifyOTP = verifyOTP;
+            window.goToStep = goToStep;
+
+            console.log('✅ Manage Bookings page loaded with clickable rows.');
+
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Universe · Booking Detail</title>
+
+    <!-- ─── Favicon (globe-icon.png) ─── -->
+    <link rel="icon" type="image/png" href="globe-icon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #c9a94e;
+            --gold-light: #e8d48b;
+            --gold-dark: #a8892e;
+            --gold-glow: rgba(201, 169, 78, 0.25);
+            --bg-dark: #0b0a0a;
+            --bg-card: rgba(14, 14, 18, 0.92);
+            --bg-sidebar: rgba(8, 8, 10, 0.96);
+            --text-light: #f1efe8;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --text-dim: rgba(255, 255, 255, 0.25);
+            --border-gold: rgba(201, 169, 78, 0.15);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        /* ─── Background ─── */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(30, 20, 10, 0.40) 0%, rgba(0, 0, 0, 0.92) 90%),
+                radial-gradient(ellipse at 0% 50%, rgba(201, 169, 78, 0.04) 0%, transparent 70%),
+                url('speed.jpeg') center center / cover no-repeat fixed;
+        }
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.60) 100%);
+            pointer-events: none;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--card-border);
+            padding: 1.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .sidebar-brand .icon {
+            font-size: 1.6rem;
+            color: var(--gold);
+            filter: drop-shadow(0 0 12px var(--gold-glow));
+        }
+
+        .sidebar-brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .sidebar-brand small {
+            font-size: 0.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            -webkit-text-fill-color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+            margin-top: -0.1rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .sidebar-nav .nav-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+            padding: 0.8rem 0.8rem 0.3rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-nav a i {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(201, 169, 78, 0.06);
+            color: var(--text-light);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(201, 169, 78, 0.10);
+            color: var(--gold-light);
+            box-shadow: inset 0 0 0 1px rgba(201, 169, 78, 0.08);
+        }
+
+        .sidebar-nav a .badge {
+            margin-left: auto;
+            background: var(--gold-dark);
+            color: #0b0a0a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sidebar-footer .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0b0a0a;
+        }
+
+        .sidebar-footer .info {
+            flex: 1;
+        }
+
+        .sidebar-footer .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .sidebar-footer .info .role {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-footer .logout {
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer .logout:hover {
+            color: #e74c3c;
+        }
+
+        /* ─── Hamburger ─── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 101;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.5rem 0.7rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ─── Main Content ─── */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 1.8rem 2.2rem 3rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Top Bar ─── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .topbar-left h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+
+        .topbar-left h2 span {
+            color: var(--gold);
+        }
+
+        .topbar-left p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-right .date-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topbar-right .date-badge i {
+            color: var(--gold);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--gold-light);
+        }
+
+        /* ─── Booking Detail Grid ─── */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem 1.6rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .panel-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .panel-header .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .status-badge.confirmed {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+
+        .status-badge.pending {
+            background: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+        }
+
+        .status-badge.cancelled {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+
+        .status-badge.completed {
+            background: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+        }
+
+        /* ─── Info Rows ─── */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row .label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .info-row .value {
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .info-row .value.gold {
+            color: var(--gold-light);
+        }
+
+        /* ─── Car Card ─── */
+        .car-preview {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .car-preview img {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #1a1818;
+            border: 1px solid var(--card-border);
+        }
+
+        .car-preview .info .name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .car-preview .info .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .car-preview .info .meta span {
+            display: inline-block;
+            margin-right: 0.8rem;
+        }
+
+        /* ─── Timeline ─── */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            bottom: 4px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1rem;
+            padding-left: 0.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gold-dark);
+            border: 2px solid var(--gold);
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item .time {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+
+        .timeline-item .event {
+            font-size: 0.85rem;
+        }
+
+        .timeline-item .event i {
+            color: var(--gold);
+            margin-right: 0.3rem;
+        }
+
+        /* ─── Action Buttons ─── */
+        .action-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+
+        .action-buttons button {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .action-buttons button:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-buttons .btn-confirm {
+            background: linear-gradient(135deg, #2d7a4a, #3a9d5e);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(46, 204, 113, 0.15);
+        }
+
+        .action-buttons .btn-confirm:hover {
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.25);
+        }
+
+        .action-buttons .btn-cancel {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(231, 76, 60, 0.15);
+        }
+
+        .action-buttons .btn-cancel:hover {
+            box-shadow: 0 8px 30px rgba(231, 76, 60, 0.25);
+        }
+
+        .action-buttons .btn-complete {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(52, 152, 219, 0.15);
+        }
+
+        .action-buttons .btn-complete:hover {
+            box-shadow: 0 8px 30px rgba(52, 152, 219, 0.25);
+        }
+
+        .action-buttons .btn-refund {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(155, 89, 182, 0.15);
+        }
+
+        .action-buttons .btn-refund:hover {
+            box-shadow: 0 8px 30px rgba(155, 89, 182, 0.25);
+        }
+
+        .action-buttons .btn-invoice {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            box-shadow: 0 4px 16px rgba(201, 169, 78, 0.15);
+        }
+
+        .action-buttons .btn-invoice:hover {
+            box-shadow: 0 8px 30px rgba(201, 169, 78, 0.25);
+        }
+
+        /* ─── Notes ─── */
+        .notes-area {
+            margin-top: 0.5rem;
+        }
+
+        .notes-area textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .notes-area textarea:focus {
+            border-color: var(--gold);
+        }
+
+        .notes-area .btn-save-note {
+            margin-top: 0.4rem;
+            padding: 0.4rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .notes-area .btn-save-note:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ─── No Data State ─── */
+        .no-data {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .no-data h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-gold);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            color: var(--text-light);
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 1024px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 1.2rem 1rem 2rem;
+            }
+
+            .topbar-left h2 {
+                font-size: 1.2rem;
+            }
+
+            .panel {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .car-preview {
+                flex-direction: column;
+            }
+
+            .car-preview img {
+                width: 100%;
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar-right .date-badge {
+                display: none;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 0.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Background ─── -->
+    <div class="bg-layer"></div>
+
+    <!-- ─── Hamburger ─── -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- ─── Sidebar Overlay ─── -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="icon">✦</span>
+            <div>
+                <h1>Dream Universe</h1>
+                <small>Admin Panel</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <!-- Dashboard -->
+            <a href="admin dashboard.html" data-page="dashboard" id="navDashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <!-- Cars -->
+            <a href="manage-cars.html" data-page="cars">
+                <i class="fas fa-car"></i> Cars
+                <span class="badge" id="carBadge">0</span>
+            </a>
+            <!-- Bookings (active) -->
+            <a href="bookings.html" data-page="bookings" class="active" id="navBookings">
+                <i class="fas fa-calendar-check"></i> Bookings
+                <span class="badge" id="bookingBadge">0</span>
+            </a>
+            <!-- Users -->
+            <a href="users.html" data-page="users">
+                <i class="fas fa-users"></i> Users
+                <span class="badge" id="userBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">Management</div>
+            <!-- Payments -->
+            <a href="payments.html" data-page="payments">
+                <i class="fas fa-credit-card"></i> Payments
+                <span class="badge" id="paymentBadge">0</span>
+            </a>
+            <!-- Reports -->
+            <a href="reports.html" data-page="reports">
+                <i class="fas fa-chart-line"></i> Reports
+            </a>
+            <!-- Reviews -->
+            <a href="reviews.html" data-page="reviews">
+                <i class="fas fa-star"></i> Reviews
+                <span class="badge" id="reviewBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">System</div>
+            <!-- Profile -->
+            <a href="profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+            <!-- Notifications -->
+            <a href="notifications.html" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge" id="notificationBadge">0</span>
+            </a>
+            <!-- Logs -->
+            <a href="logs.html" data-page="logs">
+                <i class="fas fa-history"></i> Logs
+            </a>
+            <!-- Settings -->
+            <a href="settings.html" data-page="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="avatar">AD</div>
+            <div class="info">
+                <div class="name">Admin</div>
+                <div class="role">Super Admin</div>
+            </div>
+            <div class="logout" onclick="logoutUser();"><i class="fas fa-sign-out-alt"></i></div>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main">
+
+        <!-- ─── Top Bar ─── -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Booking Detail <span>✦</span></h2>
+                <p><a class="back-link" href="bookings.html"><i class="fas fa-arrow-left"></i> Back to Bookings</a></p>
+            </div>
+            <div class="topbar-right">
+                <div class="date-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Detail Grid ─── -->
+        <div id="bookingDetailContainer">
+            <!-- Dynamically rendered by JavaScript -->
+        </div>
+
+        <!-- ─── Footer ─── -->
+        <div style="margin-top:2.5rem;font-size:0.7rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--card-border);padding-top:1.5rem;">
+            &copy; 2026 Dream Universe Car Rentals — Admin Panel
+        </div>
+
+    </main>
+
+    <!-- ─── Toast ─── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ─── Scripts ─── -->
+    <!-- Shared navigation script -->
+    <script src="nav.js"></script>
+
+    <!-- ─── Page-specific script ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── 1. Data Store ───
+            const BOOKINGS_KEY = 'dreamUniverseBookings';
+
+            function loadBookings() {
+                const stored = localStorage.getItem(BOOKINGS_KEY);
+                if (stored) {
+                    try {
+                        return JSON.parse(stored);
+                    } catch (e) {}
+                }
+                // Sample booking if none exists
+                const sample = [{
+                    id: "BK-2026-001",
+                    customer: "Rahul Sharma",
+                    customerEmail: "rahul@email.com",
+                    customerPhone: "+91 98765 43210",
+                    memberSince: "Jan 2025",
+                    car: "Mercedes-Benz EQS",
+                    carType: "Sedan",
+                    transmission: "Automatic",
+                    seats: 5,
+                    carImage: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=200&q=80",
+                    dailyRate: 4800,
+                    pickupDate: "2026-08-25T10:00:00",
+                    dropoffDate: "2026-08-28T10:00:00",
+                    amount: 14400,
+                    status: "pending",
+                    paymentMethod: "Credit Card",
+                    transactionId: "TXN-9876543210",
+                    createdAt: "2026-08-20T14:30:00",
+                    addons: [
+                        { name: "GPS Navigation", price: 500 },
+                        { name: "Child Seat", price: 300 },
+                        { name: "Additional Driver", price: 800 }
+                    ],
+                    timeline: [
+                        { time: "20 Aug 2026, 14:30", icon: "fa-plus-circle", event: "Booking created" },
+                        { time: "20 Aug 2026, 15:15", icon: "fa-envelope", event: "Confirmation email sent" }
+                    ],
+                    adminNotes: "Customer requested early pickup."
+                }];
+                localStorage.setItem(BOOKINGS_KEY, JSON.stringify(sample));
+                return sample;
+            }
+
+            function saveBookings(bookings) {
+                localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
+            }
+
+            // ─── 2. Get Booking ID from URL ───
+            function getBookingIdFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('id') || null;
+            }
+
+            // ─── 3. Toast ───
+            let toastTimeout;
+
+            window.showToast = function(msg) {
+                const el = document.getElementById('toast');
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    el.classList.remove('show');
+                }, 2800);
+            };
+
+            // ─── 4. Logout fallback ───
+            window.logoutUser = window.logoutUser || function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'login.html';
+                }
+            };
+
+            // ─── 5. Update all badges (matches admin dashboard) ───
+            function updateBadges() {
+                try {
+                    const cars = JSON.parse(localStorage.getItem('dreamUniverseCars') || '[]');
+                    const bookings = JSON.parse(localStorage.getItem('dreamUniverseBookings') || '[]');
+                    const users = JSON.parse(localStorage.getItem('dreamUniverseUsers') || '[]');
+                    const payments = JSON.parse(localStorage.getItem('dreamUniversePayments') || '[]');
+                    const reviews = JSON.parse(localStorage.getItem('dreamUniverseReviews') || '[]');
+                    const notifications = JSON.parse(localStorage.getItem('dreamUniverseNotifications') || '[]');
+
+                    const carBadge = document.getElementById('carBadge');
+                    if (carBadge) carBadge.textContent = cars.length;
+                    const bookingBadge = document.getElementById('bookingBadge');
+                    if (bookingBadge) bookingBadge.textContent = bookings.length;
+                    const userBadge = document.getElementById('userBadge');
+                    if (userBadge) userBadge.textContent = users.length;
+                    const paymentBadge = document.getElementById('paymentBadge');
+                    if (paymentBadge) paymentBadge.textContent = payments.length;
+                    const reviewBadge = document.getElementById('reviewBadge');
+                    if (reviewBadge) reviewBadge.textContent = reviews.length;
+                    const notificationBadge = document.getElementById('notificationBadge');
+                    if (notificationBadge) notificationBadge.textContent = notifications.filter(n => !n.read).length;
+
+                    // Also update the booking badge in the render if needed
+                    const renderBadge = document.getElementById('bookingBadge');
+                    if (renderBadge) renderBadge.textContent = bookings.length;
+                } catch (e) {
+                    console.warn('Could not update badges:', e);
+                }
+            }
+
+            // ─── 6. Render Booking Detail ───
+            function renderBookingDetail() {
+                const container = document.getElementById('bookingDetailContainer');
+                const bookingId = getBookingIdFromURL();
+
+                if (!bookingId) {
+                    container.innerHTML = `
+                                <div class="no-data">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <h3>No Booking Selected</h3>
+                                    <p>Please select a booking from the bookings list.</p>
+                                    <a href="bookings.html" style="display:inline-block;margin-top:1rem;padding:0.5rem 1.5rem;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:10px;color:#0b0a0a;text-decoration:none;font-weight:600;">Go to Bookings</a>
+                                </div>
+                            `;
+                    return;
+                }
+
+                const bookings = loadBookings();
+                const booking = bookings.find(b => b.id === bookingId);
+
+                if (!booking) {
+                    container.innerHTML = `
+                                <div class="no-data">
+                                    <i class="fas fa-search"></i>
+                                    <h3>Booking Not Found</h3>
+                                    <p>The booking you're looking for doesn't exist or has been deleted.</p>
+                                    <a href="bookings.html" style="display:inline-block;margin-top:1rem;padding:0.5rem 1.5rem;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:10px;color:#0b0a0a;text-decoration:none;font-weight:600;">View All Bookings</a>
+                                </div>
+                            `;
+                    return;
+                }
+
+                // Format dates
+                const createdDate = new Date(booking.createdAt || booking.date || Date.now());
+                const pickupDate = new Date(booking.pickupDate || booking.date || Date.now());
+                const dropoffDate = new Date(booking.dropoffDate || booking.date || Date.now());
+                const daysDiff = Math.max(1, Math.ceil((dropoffDate - pickupDate) / (1000 * 60 * 60 * 24)));
+
+                const formatDate = (d) => {
+                    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) +
+                        ', ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                };
+
+                const formatShortDate = (d) => {
+                    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                };
+
+                const statusMap = {
+                    'pending': 'pending',
+                    'confirmed': 'confirmed',
+                    'completed': 'completed',
+                    'cancelled': 'cancelled'
+                };
+                const status = statusMap[booking.status] || 'pending';
+
+                // Build HTML
+                container.innerHTML = `
+                            <div class="detail-grid">
+
+                                <!-- ─── Left Column ─── -->
+                                <div>
+
+                                    <!-- Booking Info -->
+                                    <div class="panel">
+                                        <div class="panel-header">
+                                            <h3>Booking Information</h3>
+                                            <span class="status-badge ${status}">${booking.status || 'Pending'}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Booking ID</span>
+                                            <span class="value gold">${booking.id || 'N/A'}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Created</span>
+                                            <span class="value">${formatDate(createdDate)}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Pickup Date</span>
+                                            <span class="value">${formatShortDate(pickupDate)}, ${pickupDate.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Dropoff Date</span>
+                                            <span class="value">${formatShortDate(dropoffDate)}, ${dropoffDate.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Duration</span>
+                                            <span class="value">${daysDiff} day${daysDiff > 1 ? 's' : ''}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Total Amount</span>
+                                            <span class="value gold">₹${(booking.amount || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Payment Method</span>
+                                            <span class="value">${booking.paymentMethod || 'N/A'}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Transaction ID</span>
+                                            <span class="value" style="font-size:0.7rem;color:var(--text-muted);">${booking.transactionId || 'TXN-' + booking.id}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Car Details -->
+                                    <div class="panel" style="margin-top:1.2rem;">
+                                        <div class="panel-header">
+                                            <h3>Car Details</h3>
+                                        </div>
+                                        <div class="car-preview">
+                                            <img src="${booking.carImage || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=200&q=80'}" alt="${booking.car || 'Car'}" />
+                                            <div class="info">
+                                                <div class="name">${booking.car || 'Unknown Car'}</div>
+                                                <div class="meta">
+                                                    <span>🚗 ${booking.carType || 'N/A'}</span>
+                                                    <span>⚙️ ${booking.transmission || 'Automatic'}</span>
+                                                    <span>🪑 ${booking.seats || '5'} seats</span>
+                                                </div>
+                                                <div style="margin-top:0.3rem;color:var(--gold-light);font-weight:600;">₹${(booking.dailyRate || booking.amount / daysDiff || 0).toLocaleString()} / day</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Customer Details -->
+                                    <div class="panel" style="margin-top:1.2rem;">
+                                        <div class="panel-header">
+                                            <h3>Customer Details</h3>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Name</span>
+                                            <span class="value">${booking.customer || 'Unknown'}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Email</span>
+                                            <span class="value">${booking.customerEmail || 'N/A'}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Phone</span>
+                                            <span class="value">${booking.customerPhone || 'N/A'}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">Member Since</span>
+                                            <span class="value">${booking.memberSince || 'N/A'}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Add-ons -->
+                                    <div class="panel" style="margin-top:1.2rem;">
+                                        <div class="panel-header">
+                                            <h3>Add-ons</h3>
+                                        </div>
+                                        ${booking.addons && booking.addons.length > 0 ? booking.addons.map(a => `
+                                            <div class="info-row">
+                                                <span class="label">${a.name}</span>
+                                                <span class="value">₹${a.price}</span>
+                                            </div>
+                                        `).join('') : '<div style="color:var(--text-muted);font-size:0.85rem;padding:0.3rem 0;">No add-ons selected</div>'}
+                                        ${booking.addons && booking.addons.length > 0 ? `
+                                            <div class="info-row" style="border-top:1px solid rgba(255,255,255,0.05);padding-top:0.5rem;margin-top:0.3rem;">
+                                                <span class="label" style="font-weight:600;">Total Add-ons</span>
+                                                <span class="value gold">₹${booking.addons.reduce((sum, a) => sum + a.price, 0)}</span>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+
+                                </div>
+
+                                <!-- ─── Right Column ─── -->
+                                <div>
+
+                                    <!-- Actions -->
+                                    <div class="panel">
+                                        <div class="panel-header">
+                                            <h3>Actions</h3>
+                                        </div>
+                                        <div class="action-buttons">
+                                            ${status === 'pending' ? `<button class="btn-confirm" onclick="handleAction('confirm')"><i class="fas fa-check"></i> Confirm Booking</button>` : ''}
+                                            ${status === 'confirmed' ? `<button class="btn-complete" onclick="handleAction('complete')"><i class="fas fa-flag-checkered"></i> Mark Completed</button>` : ''}
+                                            ${status === 'pending' || status === 'confirmed' ? `<button class="btn-cancel" onclick="handleAction('cancel')"><i class="fas fa-times"></i> Cancel Booking</button>` : ''}
+                                            ${status === 'completed' ? `<button class="btn-refund" onclick="handleAction('refund')"><i class="fas fa-undo-alt"></i> Refund Payment</button>` : ''}
+                                            <button class="btn-invoice" onclick="handleAction('invoice')"><i class="fas fa-file-invoice"></i> Download Invoice</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Timeline -->
+                                    <div class="panel" style="margin-top:1.2rem;">
+                                        <div class="panel-header">
+                                            <h3>Timeline</h3>
+                                        </div>
+                                        <div class="timeline">
+                                            <div class="timeline-item">
+                                                <div class="time">${formatDate(createdDate)}</div>
+                                                <div class="event"><i class="fas fa-plus-circle"></i> Booking created</div>
+                                            </div>
+                                            ${booking.timeline && booking.timeline.length > 0 ? booking.timeline.map(t => `
+                                                <div class="timeline-item">
+                                                    <div class="time">${t.time}</div>
+                                                    <div class="event"><i class="fas ${t.icon || 'fa-circle'}"></i> ${t.event}</div>
+                                                </div>
+                                            `).join('') : `
+                                                <div class="timeline-item">
+                                                    <div class="time">${formatDate(createdDate)}</div>
+                                                    <div class="event"><i class="fas fa-envelope"></i> Booking created</div>
+                                                </div>
+                                            `}
+                                            ${status === 'pending' ? `
+                                                <div class="timeline-item">
+                                                    <div class="time">— Pending —</div>
+                                                    <div class="event"><i class="fas fa-clock"></i> Awaiting confirmation</div>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <div class="panel" style="margin-top:1.2rem;">
+                                        <div class="panel-header">
+                                            <h3>Admin Notes</h3>
+                                        </div>
+                                        <div class="notes-area">
+                                            <textarea id="adminNotes" placeholder="Add internal notes about this booking...">${booking.adminNotes || ''}</textarea>
+                                            <button class="btn-save-note" onclick="saveNote()"><i class="fas fa-save"></i> Save Note</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+
+                // Update sidebar badge after render
+                updateBadges();
+            }
+
+            // ─── 7. Actions ───
+            window.handleAction = function(action) {
+                const bookingId = getBookingIdFromURL();
+                if (!bookingId) {
+                    showToast('⚠️ No booking selected.');
+                    return;
+                }
+
+                const bookings = loadBookings();
+                const booking = bookings.find(b => b.id === bookingId);
+                if (!booking) {
+                    showToast('⚠️ Booking not found.');
+                    return;
+                }
+
+                const actions = {
+                    'confirm': {
+                        msg: '✅ Booking confirmed successfully!',
+                        status: 'confirmed',
+                        timeline: { icon: 'fa-check-circle', event: 'Booking confirmed by admin' }
+                    },
+                    'complete': {
+                        msg: '🏁 Booking marked as completed!',
+                        status: 'completed',
+                        timeline: { icon: 'fa-flag-checkered', event: 'Booking marked as completed' }
+                    },
+                    'cancel': {
+                        msg: '❌ Booking has been cancelled.',
+                        status: 'cancelled',
+                        timeline: { icon: 'fa-times-circle', event: 'Booking cancelled by admin' }
+                    },
+                    'refund': {
+                        msg: '💰 Refund processed successfully!',
+                        status: booking.status,
+                        timeline: { icon: 'fa-undo-alt', event: 'Refund processed' }
+                    },
+                    'invoice': {
+                        msg: '📄 Downloading invoice...',
+                        status: booking.status,
+                        timeline: { icon: 'fa-file-invoice', event: 'Invoice downloaded' }
+                    }
+                };
+
+                const actionData = actions[action];
+                if (!actionData) return;
+
+                // Update booking status if changed
+                if (actionData.status && actionData.status !== booking.status) {
+                    booking.status = actionData.status;
+                }
+
+                // Add timeline event
+                if (!booking.timeline) booking.timeline = [];
+                const now = new Date();
+                booking.timeline.push({
+                    time: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) +
+                        ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                    icon: actionData.timeline.icon || 'fa-circle',
+                    event: actionData.timeline.event
+                });
+
+                saveBookings(bookings);
+                showToast(actionData.msg);
+
+                // Re-render
+                renderBookingDetail();
+            };
+
+            // ─── 8. Save Note ───
+            window.saveNote = function() {
+                const bookingId = getBookingIdFromURL();
+                if (!bookingId) {
+                    showToast('⚠️ No booking selected.');
+                    return;
+                }
+
+                const note = document.getElementById('adminNotes').value.trim();
+                if (!note) {
+                    showToast('⚠️ Please enter a note before saving.');
+                    return;
+                }
+
+                const bookings = loadBookings();
+                const booking = bookings.find(b => b.id === bookingId);
+                if (!booking) {
+                    showToast('⚠️ Booking not found.');
+                    return;
+                }
+
+                booking.adminNotes = note;
+                saveBookings(bookings);
+                showToast('✅ Note saved successfully!');
+            };
+
+            // ─── 9. Sidebar toggle ───
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // ─── 10. Set Date ───
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('en-IN', options);
+            }
+
+            // ─── 11. Init ───
+            // Update all badges from localStorage
+            updateBadges();
+
+            // Render the booking detail
+            renderBookingDetail();
+
+            // Listen for storage changes from other tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key && e.key.startsWith('dreamUniverse')) {
+                    updateBadges();
+                    renderBookingDetail();
+                }
+            });
+
+            console.log('✨ Dream Universe — Booking Detail page loaded with unified sidebar and badges.');
+
+        })();
+    </script>
+
+</body>
+</html>

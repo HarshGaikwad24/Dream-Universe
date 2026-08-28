@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Universe · Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ── reset & root ── */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --gold: #c9a94e; --gold-light: #e8d48b; --gold-dark: #a8892e;
+            --gold-glow: rgba(201,169,78,0.25);
+            --bg-dark: #0b0a0a; --bg-card: rgba(14,14,18,0.92);
+            --bg-sidebar: rgba(8,8,10,0.96);
+            --text-light: #f1efe8; --text-muted: rgba(255,255,255,0.55);
+            --text-dim: rgba(255,255,255,0.25);
+            --border-gold: rgba(201,169,78,0.15);
+            --card-border: rgba(255,255,255,0.04);
+            --shadow-card: 0 8px 32px rgba(0,0,0,0.5);
+            --radius: 16px; --transition: 0.25s ease;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-track { background:var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:10px; }
+        ::-webkit-scrollbar-thumb:hover { background:var(--gold); }
+
+        /* ── background ── */
+        .bg-layer {
+            position:fixed; inset:0; z-index:0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(30,20,10,0.40) 0%, rgba(0,0,0,0.92) 90%),
+                radial-gradient(ellipse at 0% 50%, rgba(201,169,78,0.04) 0%, transparent 70%),
+                url('speed.jpeg') center center / cover no-repeat fixed;
+        }
+        .bg-layer::after {
+            content:''; position:absolute; inset:0;
+            background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.60) 100%);
+            pointer-events:none;
+        }
+
+        /* ── sidebar ── */
+        .sidebar {
+            position:fixed; top:0; left:0; width:260px; height:100vh;
+            background:var(--bg-sidebar);
+            backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border-right:1px solid var(--card-border);
+            padding:1.8rem 1.2rem;
+            display:flex; flex-direction:column;
+            z-index:100;
+            transition:transform 0.3s ease;
+            overflow-y:auto;
+        }
+        .sidebar-brand {
+            display:flex; align-items:center; gap:0.6rem;
+            margin-bottom:2rem; padding-bottom:1rem;
+            border-bottom:1px solid var(--card-border);
+        }
+        .sidebar-brand .icon { font-size:1.6rem; color:var(--gold); filter:drop-shadow(0 0 12px var(--gold-glow)); }
+        .sidebar-brand h1 {
+            font-family:'Playfair Display',serif; font-weight:700; font-size:1.1rem;
+            letter-spacing:0.04em;
+            background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text;
+            line-height:1.2;
+        }
+        .sidebar-brand small {
+            font-size:0.5rem; letter-spacing:0.15em; text-transform:uppercase;
+            color:var(--text-muted); -webkit-text-fill-color:var(--text-muted);
+            display:block; font-weight:400; margin-top:-0.1rem;
+        }
+        .sidebar-nav { flex:1; display:flex; flex-direction:column; gap:0.2rem; }
+        .sidebar-nav .nav-label {
+            font-size:0.6rem; text-transform:uppercase; letter-spacing:0.12em;
+            color:var(--text-dim); padding:0.8rem 0.8rem 0.3rem; font-weight:600;
+        }
+        .sidebar-nav a {
+            display:flex; align-items:center; gap:0.8rem;
+            padding:0.65rem 0.9rem; border-radius:12px;
+            color:var(--text-muted); text-decoration:none;
+            font-size:0.82rem; font-weight:500;
+            transition:background 0.2s ease, color 0.2s ease;
+            cursor:pointer;
+        }
+        .sidebar-nav a i { width:20px; font-size:0.95rem; text-align:center; flex-shrink:0; }
+        .sidebar-nav a:hover { background:rgba(201,169,78,0.06); color:var(--text-light); }
+        .sidebar-nav a.active {
+            background:rgba(201,169,78,0.10);
+            color:var(--gold-light);
+            box-shadow:inset 0 0 0 1px rgba(201,169,78,0.08);
+        }
+        /* ─── Badge styling ─── */
+        .sidebar-nav a .badge {
+            margin-left:auto;
+            background:var(--gold-dark);
+            color:#0b0a0a;
+            font-size:0.6rem;
+            font-weight:700;
+            padding:0.1rem 0.5rem;
+            border-radius:20px;
+            min-width:20px;
+            text-align:center;
+        }
+        .sidebar-footer {
+            margin-top:auto; padding-top:1rem;
+            border-top:1px solid var(--card-border);
+            display:flex; align-items:center; gap:0.8rem;
+        }
+        .sidebar-footer .avatar {
+            width:36px; height:36px; border-radius:50%;
+            background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:0.9rem; color:#0b0a0a;
+        }
+        .sidebar-footer .info { flex:1; }
+        .sidebar-footer .info .name { font-size:0.8rem; font-weight:600; }
+        .sidebar-footer .info .role { font-size:0.65rem; color:var(--text-muted); }
+        .sidebar-footer .logout {
+            color:var(--text-dim); transition:color 0.2s ease;
+            cursor:pointer; font-size:0.9rem;
+        }
+        .sidebar-footer .logout:hover { color:#e74c3c; }
+
+        .hamburger {
+            display:none;
+            position:fixed; top:1rem; left:1rem; z-index:101;
+            background:var(--bg-card); border:1px solid var(--card-border);
+            border-radius:12px; padding:0.5rem 0.7rem;
+            color:var(--text-light); font-size:1.3rem;
+            cursor:pointer; backdrop-filter:blur(8px);
+            transition:background 0.2s ease;
+        }
+        .hamburger:hover { background:rgba(255,255,255,0.06); }
+
+        .sidebar-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.5); z-index:99;
+        }
+        .sidebar-overlay.active { display:block; }
+
+        /* ── main ── */
+        .main {
+            margin-left:260px; flex:1;
+            padding:1.8rem 2.2rem 3rem;
+            min-height:100vh; position:relative; z-index:1;
+        }
+
+        /* ── topbar ── */
+        .topbar {
+            display:flex; align-items:center; justify-content:space-between;
+            flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
+        }
+        .topbar-left h2 {
+            font-family:'Playfair Display',serif; font-weight:600; font-size:1.6rem;
+        }
+        .topbar-left h2 span { color:var(--gold); }
+        .topbar-left p { color:var(--text-muted); font-size:0.85rem; font-weight:300; }
+        .topbar-right { display:flex; align-items:center; gap:1rem; }
+        .topbar-right .date-badge {
+            background:var(--bg-card); border:1px solid var(--card-border);
+            border-radius:30px; padding:0.4rem 1.2rem;
+            font-size:0.8rem; color:var(--text-muted);
+            display:flex; align-items:center; gap:0.5rem;
+        }
+        .topbar-right .date-badge i { color:var(--gold); }
+
+        /* ── stats ── */
+        .stats-grid {
+            display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+            gap:1.2rem; margin-bottom:2rem;
+        }
+        .stat-card {
+            background:var(--bg-card); backdrop-filter:blur(8px);
+            border:1px solid var(--card-border); border-radius:var(--radius);
+            padding:1.2rem 1.4rem; box-shadow:var(--shadow-card);
+            transition:transform 0.25s ease, border-color 0.3s ease;
+        }
+        .stat-card:hover { transform:translateY(-3px); border-color:rgba(201,169,78,0.12); }
+        .stat-card .stat-label {
+            font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em;
+            color:var(--text-muted); font-weight:500;
+        }
+        .stat-card .stat-value {
+            font-family:'Playfair Display',serif; font-size:2rem; font-weight:700;
+            margin:0.2rem 0 0.1rem;
+        }
+        .stat-card .stat-value.gold { color:var(--gold-light); }
+        .stat-card .stat-change {
+            font-size:0.75rem; display:inline-flex; align-items:center;
+            gap:0.3rem; padding:0.1rem 0.6rem; border-radius:20px;
+            background:rgba(46,204,113,0.12); color:#2ecc71;
+        }
+        .stat-card .stat-change.down { background:rgba(231,76,60,0.12); color:#e74c3c; }
+        .stat-card .stat-icon { float:right; font-size:1.8rem; color:var(--gold); opacity:0.25; }
+
+        /* ── panels ── */
+        .panel {
+            background:var(--bg-card); backdrop-filter:blur(8px);
+            border:1px solid var(--card-border); border-radius:var(--radius);
+            padding:1.2rem 1.4rem 1.6rem; box-shadow:var(--shadow-card);
+        }
+        .panel-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;
+        }
+        .panel-header h3 {
+            font-family:'Playfair Display',serif; font-weight:600; font-size:1.1rem;
+        }
+        .panel-header .action-link {
+            font-size:0.75rem; color:var(--gold-light); cursor:pointer;
+            transition:color 0.2s ease; text-decoration:none;
+        }
+        .panel-header .action-link:hover { color:var(--gold); text-decoration:underline; }
+
+        .empty-state {
+            text-align:center; padding:2.5rem 1rem; color:var(--text-muted);
+        }
+        .empty-state i { font-size:3rem; color:var(--text-dim); margin-bottom:0.8rem; display:block; }
+        .empty-state h4 {
+            font-family:'Playfair Display',serif; font-weight:600; font-size:1.1rem;
+            color:var(--text-light); margin-bottom:0.3rem;
+        }
+        .empty-state p { font-size:0.85rem; }
+
+        .toast {
+            position:fixed; bottom:2rem; left:50%;
+            transform:translateX(-50%) translateY(20px);
+            background:var(--bg-card); backdrop-filter:blur(12px);
+            border:1px solid var(--border-gold);
+            padding:0.7rem 2rem; border-radius:40px;
+            color:var(--text-light); font-weight:500;
+            box-shadow:0 10px 40px rgba(0,0,0,0.6);
+            z-index:2000; opacity:0;
+            transition:opacity 0.4s ease, transform 0.4s ease;
+            pointer-events:none; font-size:0.9rem;
+        }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+        @media (max-width:1024px) { .two-col { grid-template-columns:1fr; } }
+        @media (max-width:768px) {
+            .sidebar { transform:translateX(-100%); width:280px; }
+            .sidebar.open { transform:translateX(0); }
+            .hamburger { display:block; }
+            .main { margin-left:0; padding:1.2rem 1rem 2rem; }
+            .topbar-left h2 { font-size:1.2rem; }
+            .stats-grid { grid-template-columns:1fr 1fr; }
+        }
+        @media (max-width:480px) {
+            .stats-grid { grid-template-columns:1fr; }
+            .topbar-right .date-badge { display:none; }
+            .panel { padding:1rem; }
+            .sidebar { width:100%; max-width:320px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer"></div>
+    <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="icon">✦</span>
+            <div>
+                <h1>Dream Universe</h1>
+                <small>Admin Panel</small>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <!-- ✅ Dashboard with badge (0 by default) -->
+            <a href="admin dashboard.html" data-page="dashboard" class="active" id="navDashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <!-- ✅ Cars with badge -->
+            <a href="manage-cars.html" data-page="cars">
+                <i class="fas fa-car"></i> Cars
+                <span class="badge" id="carBadge">0</span>
+            </a>
+            <!-- ✅ Bookings with badge -->
+            <a href="bookings.html" data-page="bookings">
+                <i class="fas fa-calendar-check"></i> Bookings
+                <span class="badge" id="bookingBadge">0</span>
+            </a>
+            <!-- ✅ Users with badge -->
+            <a href="users.html" data-page="users">
+                <i class="fas fa-users"></i> Users
+                <span class="badge" id="userBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">Management</div>
+            <!-- ✅ Payments with badge -->
+            <a href="payments.html" data-page="payments">
+                <i class="fas fa-credit-card"></i> Payments
+                <span class="badge" id="paymentBadge">0</span>
+            </a>
+            <!-- ✅ Reports (no badge) -->
+            <a href="reports.html" data-page="reports">
+                <i class="fas fa-chart-line"></i> Reports
+            </a>
+            <!-- ✅ Reviews with badge -->
+            <a href="reviews.html" data-page="reviews">
+                <i class="fas fa-star"></i> Reviews
+                <span class="badge" id="reviewBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">System</div>
+            <!-- ✅ Profile -->
+            <a href="profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+            <!-- ✅ Notifications with badge -->
+            <a href="notifications.html" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge" id="notificationBadge">0</span>
+            </a>
+            <!-- ✅ Logs -->
+            <a href="logs.html" data-page="logs">
+                <i class="fas fa-history"></i> Logs
+            </a>
+            <!-- ✅ Settings -->
+            <a href="settings.html" data-page="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="avatar">AD</div>
+            <div class="info">
+                <div class="name">Admin</div>
+                <div class="role">Super Admin</div>
+            </div>
+            <div class="logout" onclick="logoutUser();"><i class="fas fa-sign-out-alt"></i></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+        <!-- topbar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Dashboard <span>✦</span></h2>
+                <p>Welcome back, Admin. Here's what's happening with your fleet.</p>
+            </div>
+            <div class="topbar-right">
+                <div class="date-badge"><i class="fas fa-calendar-alt"></i> <span id="currentDate"></span></div>
+            </div>
+        </div>
+
+        <!-- stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-car"></i></span>
+                <div class="stat-label">Total Fleet</div>
+                <div class="stat-value gold" id="statCars">0</div>
+                <span class="stat-change"><i class="fas fa-arrow-up"></i> 0 this month</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-calendar-check"></i></span>
+                <div class="stat-label">Active Bookings</div>
+                <div class="stat-value" id="statBookings">0</div>
+                <span class="stat-change"><i class="fas fa-arrow-up"></i> 0 vs last week</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-users"></i></span>
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value gold" id="statUsers">0</div>
+                <span class="stat-change"><i class="fas fa-arrow-up"></i> 0 new</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-rupee-sign"></i></span>
+                <div class="stat-label">Revenue (This Month)</div>
+                <div class="stat-value" id="statRevenue">₹0</div>
+                <span class="stat-change"><i class="fas fa-arrow-up"></i> 0%</span>
+            </div>
+        </div>
+
+        <!-- ===== UPDATED LAYOUT: Recent Bookings & Fleet Status Stacked ===== -->
+        <!-- Recent Bookings -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Recent Bookings</h3>
+                <a class="action-link" href="bookings.html">View all →</a>
+            </div>
+            <div class="empty-state">
+                <i class="fas fa-calendar-plus"></i>
+                <h4>No Bookings Yet</h4>
+                <p>When customers book your cars, they'll appear here.</p>
+            </div>
+        </div>
+
+        <!-- Fleet Status (now placed directly below Recent Bookings) -->
+        <div class="panel" style="margin-top: 1.8rem;">
+            <div class="panel-header">
+                <h3>Fleet Status</h3>
+                <a class="action-link" href="manage-cars.html">Manage →</a>
+            </div>
+            <div class="empty-state" style="padding:1.5rem 1rem;">
+                <i class="fas fa-car" style="font-size:2rem;"></i>
+                <h4>No Cars in Fleet</h4>
+                <p>Add your first car to get started.</p>
+            </div>
+        </div>
+
+        <div style="margin-top:2rem;font-size:0.7rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--card-border);padding-top:1.5rem;">
+            &copy; 2026 Dream Universe Car Rentals — Admin Panel
+        </div>
+    </main>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <!-- Shared navigation script -->
+    <script src="nav.js"></script>
+    <!-- Page-specific update for dashboard stats and badges -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ── logout (fallback if nav.js doesn't load) ──
+            window.logoutUser = window.logoutUser || function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'login.html';
+                }
+            };
+
+            // ── toast (fallback) ──
+            let toastTimeout;
+            window.showToast = window.showToast || function(msg) {
+                const el = document.getElementById('toast');
+                if (!el) return;
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => { el.classList.remove('show'); }, 2800);
+            };
+
+            // ── date (fallback) ──
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('en-IN', options);
+            }
+
+            // ── Update stats and badges from localStorage ──
+            function updateDashboard() {
+                try {
+                    const cars = JSON.parse(localStorage.getItem('dreamUniverseCars') || '[]');
+                    const bookings = JSON.parse(localStorage.getItem('dreamUniverseBookings') || '[]');
+                    const users = JSON.parse(localStorage.getItem('dreamUniverseUsers') || '[]');
+                    const payments = JSON.parse(localStorage.getItem('dreamUniversePayments') || '[]');
+                    const reviews = JSON.parse(localStorage.getItem('dreamUniverseReviews') || '[]');
+                    const notifications = JSON.parse(localStorage.getItem('dreamUniverseNotifications') || '[]');
+
+                    // Badges
+                    const carBadge = document.getElementById('carBadge');
+                    if (carBadge) carBadge.textContent = cars.length;
+                    const bookingBadge = document.getElementById('bookingBadge');
+                    if (bookingBadge) bookingBadge.textContent = bookings.length;
+                    const userBadge = document.getElementById('userBadge');
+                    if (userBadge) userBadge.textContent = users.length;
+                    const paymentBadge = document.getElementById('paymentBadge');
+                    if (paymentBadge) paymentBadge.textContent = payments.length;
+                    const reviewBadge = document.getElementById('reviewBadge');
+                    if (reviewBadge) reviewBadge.textContent = reviews.length;
+                    const notificationBadge = document.getElementById('notificationBadge');
+                    if (notificationBadge) notificationBadge.textContent = notifications.filter(n => !n.read).length;
+
+                    // Stats on dashboard
+                    const statCars = document.getElementById('statCars');
+                    if (statCars) statCars.textContent = cars.length;
+                    const statBookings = document.getElementById('statBookings');
+                    if (statBookings) statBookings.textContent = bookings.length;
+                    const statUsers = document.getElementById('statUsers');
+                    if (statUsers) statUsers.textContent = users.length;
+
+                    // Revenue: sum of booking amounts (if they have amount field)
+                    let totalRevenue = 0;
+                    bookings.forEach(b => { totalRevenue += b.amount || 0; });
+                    const statRevenue = document.getElementById('statRevenue');
+                    if (statRevenue) statRevenue.textContent = '₹' + totalRevenue.toLocaleString();
+
+                } catch (e) {
+                    console.warn('Could not update dashboard stats:', e);
+                }
+            }
+
+            // Run on load
+            updateDashboard();
+
+            // Listen for storage changes from other tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key && e.key.startsWith('dreamUniverse')) {
+                    updateDashboard();
+                }
+            });
+
+            console.log('✨ Dashboard updated with unified navigation and badges.');
+        })();
+    </script>
+</body>
+</html>

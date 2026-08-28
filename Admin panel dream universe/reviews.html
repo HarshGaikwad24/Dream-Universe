@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Universe · Reviews</title>
+
+    <!-- ─── Favicon (globe-icon.png) ─── -->
+    <link rel="icon" type="image/png" href="globe-icon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #c9a94e;
+            --gold-light: #e8d48b;
+            --gold-dark: #a8892e;
+            --gold-glow: rgba(201, 169, 78, 0.25);
+            --bg-dark: #0b0a0a;
+            --bg-card: rgba(14, 14, 18, 0.92);
+            --bg-sidebar: rgba(8, 8, 10, 0.96);
+            --text-light: #f1efe8;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --text-dim: rgba(255, 255, 255, 0.25);
+            --border-gold: rgba(201, 169, 78, 0.15);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        /* ─── Background ─── */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(30, 20, 10, 0.40) 0%, rgba(0, 0, 0, 0.92) 90%),
+                radial-gradient(ellipse at 0% 50%, rgba(201, 169, 78, 0.04) 0%, transparent 70%),
+                url('speed.jpeg') center center / cover no-repeat fixed;
+        }
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.60) 100%);
+            pointer-events: none;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--card-border);
+            padding: 1.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .sidebar-brand .icon {
+            font-size: 1.6rem;
+            color: var(--gold);
+            filter: drop-shadow(0 0 12px var(--gold-glow));
+        }
+
+        .sidebar-brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .sidebar-brand small {
+            font-size: 0.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            -webkit-text-fill-color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+            margin-top: -0.1rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .sidebar-nav .nav-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+            padding: 0.8rem 0.8rem 0.3rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-nav a i {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(201, 169, 78, 0.06);
+            color: var(--text-light);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(201, 169, 78, 0.10);
+            color: var(--gold-light);
+            box-shadow: inset 0 0 0 1px rgba(201, 169, 78, 0.08);
+        }
+
+        .sidebar-nav a .badge {
+            margin-left: auto;
+            background: var(--gold-dark);
+            color: #0b0a0a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sidebar-footer .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0b0a0a;
+        }
+
+        .sidebar-footer .info {
+            flex: 1;
+        }
+
+        .sidebar-footer .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .sidebar-footer .info .role {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-footer .logout {
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer .logout:hover {
+            color: #e74c3c;
+        }
+
+        /* ─── Hamburger ─── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 101;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.5rem 0.7rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ─── Main Content ─── */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 1.8rem 2.2rem 3rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Top Bar ─── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .topbar-left h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+
+        .topbar-left h2 span {
+            color: var(--gold);
+        }
+
+        .topbar-left p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-right .date-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topbar-right .date-badge i {
+            color: var(--gold);
+        }
+
+        /* ─── Search & Filter Bar ─── */
+        .search-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1rem 1.4rem;
+            margin-bottom: 1.8rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .search-filter-bar .search-wrap {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.4rem 0.8rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-filter-bar .search-wrap:focus-within {
+            border-color: var(--gold);
+        }
+
+        .search-filter-bar .search-wrap i {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .search-filter-bar .search-wrap input {
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            padding: 0.4rem 0;
+            width: 100%;
+        }
+
+        .search-filter-bar .search-wrap input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-filter-bar .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-filter-bar .filter-group select {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.5rem 0.9rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .search-filter-bar .filter-group select:focus {
+            border-color: var(--gold);
+        }
+
+        .search-filter-bar .filter-group select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .filter-group .rating-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .filter-group .rating-filter i {
+            color: var(--gold);
+        }
+
+        /* ─── Reviews Table ─── */
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem 1.6rem;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .panel-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .panel-header .result-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        table th {
+            text-align: left;
+            padding: 0.6rem 0.4rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--card-border);
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 0.7rem 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            vertical-align: middle;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .review-cell .review-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stars {
+            color: var(--gold);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .stars .empty-star {
+            color: var(--text-dim);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.approved {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+
+        .status-badge.pending {
+            background: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+        }
+
+        .status-badge.rejected {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btns button {
+            padding: 0.2rem 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+        }
+
+        .action-btns button:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btns .btn-view {
+            background: rgba(52, 152, 219, 0.12);
+            color: #3498db;
+        }
+
+        .action-btns .btn-view:hover {
+            background: rgba(52, 152, 219, 0.22);
+        }
+
+        .action-btns .btn-approve {
+            background: rgba(46, 204, 113, 0.12);
+            color: #2ecc71;
+        }
+
+        .action-btns .btn-approve:hover {
+            background: rgba(46, 204, 113, 0.22);
+        }
+
+        .action-btns .btn-reject {
+            background: rgba(241, 196, 15, 0.12);
+            color: #f1c40f;
+        }
+
+        .action-btns .btn-reject:hover {
+            background: rgba(241, 196, 15, 0.22);
+        }
+
+        .action-btns .btn-delete {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+        }
+
+        .action-btns .btn-delete:hover {
+            background: rgba(231, 76, 60, 0.22);
+        }
+
+        .action-btns .btn-reply {
+            background: rgba(201, 169, 78, 0.12);
+            color: var(--gold-light);
+        }
+
+        .action-btns .btn-reply:hover {
+            background: rgba(201, 169, 78, 0.22);
+        }
+
+        /* ─── Empty State ─── */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-dim);
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .empty-state h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+
+        /* ─── Pagination ─── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .pagination .info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .pagination .pages {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .pagination .pages button {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .pagination .pages button:hover {
+            background: rgba(201, 169, 78, 0.06);
+            border-color: rgba(201, 169, 78, 0.15);
+        }
+
+        .pagination .pages button.active {
+            background: rgba(201, 169, 78, 0.10);
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-gold);
+            border-radius: 28px;
+            max-width: 520px;
+            width: 100%;
+            padding: 2rem 2.2rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            animation: modalIn 0.35s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.94) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal .close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: color 0.25s ease;
+            line-height: 1;
+        }
+
+        .modal .close:hover {
+            color: var(--text-light);
+        }
+
+        .modal h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .modal .sub {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal .review-detail {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .modal .review-detail .reviewer {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .modal .review-detail .car {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .modal .review-detail .stars-display {
+            color: var(--gold);
+            font-size: 1rem;
+            margin: 0.3rem 0;
+        }
+
+        .modal .review-detail .review-text-full {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .modal .review-detail .date {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 0.3rem;
+        }
+
+        .modal .form-group {
+            margin-bottom: 0.8rem;
+        }
+
+        .modal .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+        }
+
+        .modal .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal .form-group textarea:focus {
+            border-color: var(--gold);
+        }
+
+        .modal .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            box-shadow: 0 4px 20px rgba(201, 169, 78, 0.15);
+            margin-top: 0.5rem;
+        }
+
+        .modal .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(201, 169, 78, 0.25);
+        }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-gold);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            color: var(--text-light);
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 1024px) {
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-filter-bar .filter-group {
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 1.2rem 1rem 2rem;
+            }
+
+            .topbar-left h2 {
+                font-size: 1.2rem;
+            }
+
+            .search-filter-bar {
+                padding: 0.8rem 1rem;
+            }
+
+            .search-filter-bar .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .search-filter-bar .filter-group select {
+                width: 100%;
+            }
+
+            .panel {
+                padding: 1rem;
+            }
+
+            .action-btns {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+
+            .action-btns button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pagination {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .modal {
+                padding: 1.4rem 1.2rem;
+                margin: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar-right .date-badge {
+                display: none;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+            .review-cell .review-text {
+                max-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Background ─── -->
+    <div class="bg-layer"></div>
+
+    <!-- ─── Hamburger ─── -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- ─── Sidebar Overlay ─── -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="icon">✦</span>
+            <div>
+                <h1>Dream Universe</h1>
+                <small>Admin Panel</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="admin dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="manage-cars.html" data-page="cars">
+                <i class="fas fa-car"></i> Cars
+                <span class="badge" id="carBadge">0</span>
+            </a>
+            <a href="bookings.html" data-page="bookings">
+                <i class="fas fa-calendar-check"></i> Bookings
+                <span class="badge" id="bookingBadge">0</span>
+            </a>
+            <a href="users.html" data-page="users">
+                <i class="fas fa-users"></i> Users
+                <span class="badge" id="userBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">Management</div>
+            <a href="payments.html" data-page="payments">
+                <i class="fas fa-credit-card"></i> Payments
+                <span class="badge" id="paymentBadge">0</span>
+            </a>
+            <a href="reports.html" data-page="reports">
+                <i class="fas fa-chart-line"></i> Reports
+            </a>
+            <!-- ✅ Reviews link highlighted with active class -->
+            <a href="reviews.html" data-page="reviews" class="active">
+                <i class="fas fa-star"></i> Reviews
+                <span class="badge" id="reviewBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">System</div>
+            <a href="profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+            <a href="notifications.html" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge" id="notificationBadge">0</span>
+            </a>
+            <a href="logs.html" data-page="logs">
+                <i class="fas fa-history"></i> Logs
+            </a>
+            <a href="settings.html" data-page="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="avatar">AD</div>
+            <div class="info">
+                <div class="name">Admin</div>
+                <div class="role">Super Admin</div>
+            </div>
+            <div class="logout" onclick="logoutUser();">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main">
+
+        <!-- ─── Top Bar ─── -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Manage Reviews <span>✦</span></h2>
+                <p>Moderate, approve, and respond to customer reviews.</p>
+            </div>
+            <div class="topbar-right">
+                <div class="date-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Search & Filter Bar ─── -->
+        <div class="search-filter-bar">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by customer, car, or review text..." />
+            </div>
+            <div class="filter-group">
+                <select id="filterStatus">
+                    <option value="all">All Status</option>
+                    <option value="approved">Approved</option>
+                    <option value="pending">Pending</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <select id="filterRating">
+                    <option value="all">All Ratings</option>
+                    <option value="5">5 ★</option>
+                    <option value="4">4 ★</option>
+                    <option value="3">3 ★</option>
+                    <option value="2">2 ★</option>
+                    <option value="1">1 ★</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ─── Reviews Table ─── -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3>All Reviews</h3>
+                <span class="result-count" id="resultCount">Showing 0 reviews</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer / Car</th>
+                            <th>Review</th>
+                            <th>Rating</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviewsTableBody">
+                        <!-- Rendered by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ─── Pagination ─── -->
+            <div class="pagination">
+                <span class="info" id="paginationInfo">Showing 0–0 of 0 reviews</span>
+                <div class="pages">
+                    <button onclick="changePage('prev')"><i class="fas fa-chevron-left"></i></button>
+                    <button class="active" data-page="1" onclick="goToPage(1)">1</button>
+                    <button onclick="changePage('next')"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Footer ─── -->
+        <div style="margin-top:2rem;font-size:0.7rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--card-border);padding-top:1.5rem;">
+            &copy; 2026 Dream Universe Car Rentals — Admin Panel
+        </div>
+
+    </main>
+
+    <!-- ─── Modal: View & Reply ─── -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal">
+            <button class="close" onclick="closeModal('reviewModal')">✕</button>
+            <h2 id="modalReviewTitle">Review Details</h2>
+            <p class="sub" id="modalReviewSub">View the full review and respond.</p>
+            <div class="review-detail" id="reviewDetail">
+                <div class="reviewer" id="modalReviewer">John Doe</div>
+                <div class="car" id="modalCar">Mercedes EQS</div>
+                <div class="stars-display" id="modalStars">★★★★★</div>
+                <div class="review-text-full" id="modalReviewText">Review text goes here.</div>
+                <div class="date" id="modalDate">2 weeks ago</div>
+            </div>
+            <div class="form-group">
+                <label for="replyText">Your Response</label>
+                <textarea id="replyText" placeholder="Reply to the customer's review..."></textarea>
+            </div>
+            <button class="btn-submit" onclick="submitReply()"><i class="fas fa-reply"></i> Send Reply</button>
+        </div>
+    </div>
+
+    <!-- ─── Toast ─── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ─── Shared Navigation Script ─── -->
+    <script src="nav.js"></script>
+
+    <!-- ─── Page-Specific Script ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── 1. Data Store ───
+            let reviews = [];
+            let currentPage = 1;
+            const itemsPerPage = 6;
+            let filteredReviews = [];
+            let currentReviewId = null;
+
+            // ─── 2. Load reviews from localStorage ───
+            function loadReviews() {
+                const stored = localStorage.getItem('dreamUniverseReviews');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (parsed.length > 0) {
+                            reviews = parsed;
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                // ─── NO SAMPLE DATA — STARTS EMPTY ───
+                reviews = [];
+                localStorage.setItem('dreamUniverseReviews', JSON.stringify([]));
+            }
+
+            function saveReviews() {
+                localStorage.setItem('dreamUniverseReviews', JSON.stringify(reviews));
+            }
+
+            // ─── 3. Utility ───
+            function generateReviewId() {
+                return 'REV' + String(Date.now()).slice(-6);
+            }
+
+            function formatDate(dateStr) {
+                const d = new Date(dateStr);
+                const now = new Date();
+                const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+                if (diff === 0) return 'Today';
+                if (diff === 1) return 'Yesterday';
+                if (diff < 7) return diff + ' days ago';
+                if (diff < 30) return Math.floor(diff / 7) + ' weeks ago';
+                return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            function getStarsHTML(rating) {
+                let html = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        html += '<i class="fas fa-star"></i>';
+                    } else {
+                        html += '<i class="fas fa-star empty-star" style="color:var(--text-dim);"></i>';
+                    }
+                }
+                return html;
+            }
+
+            // ─── 4. Set current date ───
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('en-IN', options);
+            }
+
+            // ─── 5. Toast ───
+            let toastTimeout;
+
+            window.showToast = function(msg) {
+                const el = document.getElementById('toast');
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    el.classList.remove('show');
+                }, 2800);
+            };
+
+            // ─── 6. Logout (fallback) ───
+            window.logoutUser = window.logoutUser || function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'login.html';
+                }
+            };
+
+            // ─── 7. Render Reviews ───
+            function renderReviews() {
+                const tbody = document.getElementById('reviewsTableBody');
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = Math.min(start + itemsPerPage, filteredReviews.length);
+                const pageItems = filteredReviews.slice(start, end);
+
+                if (pageItems.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="6" style="text-align:center;padding:2.5rem 1rem;color:var(--text-muted);">
+                            <i class="fas fa-star" style="font-size:2.5rem;display:block;margin-bottom:0.8rem;color:var(--text-dim);"></i>
+                            <h4 style="font-family:'Playfair Display',serif;font-weight:600;font-size:1.1rem;color:var(--text-light);margin-bottom:0.3rem;">No Reviews Yet</h4>
+                            <p style="font-size:0.85rem;">Reviews from customers will appear here.</p>
+                        </td></tr>`;
+                } else {
+                    tbody.innerHTML = pageItems.map(r => `
+                                <tr>
+                                    <td>
+                                        <div style="display:flex;flex-direction:column;">
+                                            <span style="font-weight:500;font-size:0.85rem;">${r.customer}</span>
+                                            <span style="font-size:0.7rem;color:var(--text-muted);">${r.car}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="review-text">"${r.text.length > 60 ? r.text.slice(0, 60) + '...' : r.text}"</div>
+                                    </td>
+                                    <td>
+                                        <div class="stars">${getStarsHTML(r.rating)}</div>
+                                    </td>
+                                    <td style="font-size:0.75rem;color:var(--text-muted);">${formatDate(r.date)}</td>
+                                    <td><span class="status-badge ${r.status}">${r.status}</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button class="btn-view" onclick="viewReview('${r.id}')"><i class="fas fa-eye"></i> View</button>
+                                            ${r.status === 'pending' ? `<button class="btn-approve" onclick="approveReview('${r.id}')"><i class="fas fa-check"></i> Approve</button>` : ''}
+                                            ${r.status === 'pending' ? `<button class="btn-reject" onclick="rejectReview('${r.id}')"><i class="fas fa-times"></i> Reject</button>` : ''}
+                                            ${r.status === 'approved' ? `<button class="btn-reply" onclick="viewReview('${r.id}')"><i class="fas fa-reply"></i> Reply</button>` : ''}
+                                            <button class="btn-delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('');
+                }
+
+                // Update counts
+                const total = filteredReviews.length;
+                document.getElementById('resultCount').textContent = `Showing ${total} review${total !== 1 ? 's' : ''}`;
+                const badge = document.getElementById('reviewBadge');
+                if (badge) badge.textContent = total;
+                document.getElementById('paginationInfo').textContent =
+                    `Showing ${total > 0 ? start + 1 : 0}–${Math.min(end, total)} of ${total} review${total !== 1 ? 's' : ''}`;
+
+                // Update pagination buttons
+                const totalPages = Math.ceil(total / itemsPerPage);
+                const pageBtns = document.querySelectorAll('.pagination .pages button[data-page]');
+                pageBtns.forEach(btn => {
+                    const page = parseInt(btn.dataset.page);
+                    if (page > totalPages || totalPages === 0) {
+                        btn.style.display = 'none';
+                    } else {
+                        btn.style.display = 'inline-block';
+                        btn.classList.toggle('active', page === currentPage);
+                    }
+                });
+
+                // Show/hide prev/next
+                const prevBtn = document.querySelector('.pagination .pages button:first-child');
+                const nextBtn = document.querySelector('.pagination .pages button:last-child');
+                if (prevBtn) prevBtn.style.display = currentPage > 1 ? 'inline-block' : 'none';
+                if (nextBtn) nextBtn.style.display = currentPage < totalPages ? 'inline-block' : 'none';
+            }
+
+            // ─── 8. Filter & Search ───
+            function applyFilters() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+                const statusFilter = document.getElementById('filterStatus').value;
+                const ratingFilter = document.getElementById('filterRating').value;
+
+                filteredReviews = reviews.filter(r => {
+                    const matchSearch = r.customer.toLowerCase().includes(searchTerm) ||
+                        r.car.toLowerCase().includes(searchTerm) ||
+                        r.text.toLowerCase().includes(searchTerm);
+                    const matchStatus = statusFilter === 'all' || r.status === statusFilter;
+                    const matchRating = ratingFilter === 'all' || r.rating === parseInt(ratingFilter);
+                    return matchSearch && matchStatus && matchRating;
+                });
+
+                currentPage = 1;
+                renderReviews();
+            }
+
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('filterStatus').addEventListener('change', applyFilters);
+            document.getElementById('filterRating').addEventListener('change', applyFilters);
+
+            // ─── 9. Pagination ───
+            window.goToPage = function(page) {
+                const totalPages = Math.ceil(filteredReviews.length / itemsPerPage);
+                if (page < 1 || page > totalPages) return;
+                currentPage = page;
+                renderReviews();
+            };
+
+            window.changePage = function(direction) {
+                const totalPages = Math.ceil(filteredReviews.length / itemsPerPage);
+                if (direction === 'prev' && currentPage > 1) currentPage--;
+                if (direction === 'next' && currentPage < totalPages) currentPage++;
+                renderReviews();
+            };
+
+            // ─── 10. Actions ───
+            window.viewReview = function(id) {
+                const review = reviews.find(r => r.id === id);
+                if (!review) return;
+                currentReviewId = id;
+
+                document.getElementById('modalReviewTitle').textContent = 'Review Details';
+                document.getElementById('modalReviewSub').textContent = 'View the full review and respond.';
+                document.getElementById('modalReviewer').textContent = review.customer;
+                document.getElementById('modalCar').textContent = review.car;
+                document.getElementById('modalStars').innerHTML = getStarsHTML(review.rating);
+                document.getElementById('modalReviewText').textContent = review.text;
+                document.getElementById('modalDate').textContent = formatDate(review.date);
+                document.getElementById('replyText').value = review.reply || '';
+
+                document.getElementById('reviewModal').classList.add('active');
+            };
+
+            window.approveReview = function(id) {
+                const review = reviews.find(r => r.id === id);
+                if (!review) return;
+                review.status = 'approved';
+                saveReviews();
+                applyFilters();
+                showToast(`✅ Review by ${review.customer} approved.`);
+            };
+
+            window.rejectReview = function(id) {
+                const review = reviews.find(r => r.id === id);
+                if (!review) return;
+                review.status = 'rejected';
+                saveReviews();
+                applyFilters();
+                showToast(`❌ Review by ${review.customer} rejected.`);
+            };
+
+            window.deleteReview = function(id) {
+                const review = reviews.find(r => r.id === id);
+                if (!review) return;
+                if (confirm(`Delete review from "${review.customer}"? This action cannot be undone.`)) {
+                    const index = reviews.findIndex(r => r.id === id);
+                    if (index > -1) {
+                        reviews.splice(index, 1);
+                        saveReviews();
+                        applyFilters();
+                        showToast(`🗑️ Review by ${review.customer} has been deleted.`);
+                    }
+                }
+            };
+
+            window.submitReply = function() {
+                if (!currentReviewId) return;
+                const review = reviews.find(r => r.id === currentReviewId);
+                if (!review) return;
+                const reply = document.getElementById('replyText').value.trim();
+                if (!reply) {
+                    showToast('⚠️ Please enter a reply before sending.');
+                    return;
+                }
+                review.reply = reply;
+                saveReviews();
+                closeModal('reviewModal');
+                showToast(`💬 Reply sent to ${review.customer}!`);
+                applyFilters();
+            };
+
+            window.closeModal = function(id) {
+                document.getElementById(id).classList.remove('active');
+            };
+
+            // ─── 11. Sidebar Toggle ───
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // ─── 12. Update badges ───
+            function updateBadges() {
+                try {
+                    const cars = JSON.parse(localStorage.getItem('dreamUniverseCars') || '[]');
+                    const badge = document.getElementById('carBadge');
+                    if (badge) badge.textContent = cars.length;
+                } catch (e) {}
+                try {
+                    const bookings = JSON.parse(localStorage.getItem('dreamUniverseBookings') || '[]');
+                    const badge = document.getElementById('bookingBadge');
+                    if (badge) badge.textContent = bookings.length;
+                } catch (e) {}
+                // User badge forced to 0
+                const userBadge = document.getElementById('userBadge');
+                if (userBadge) userBadge.textContent = 0;
+                try {
+                    const payments = JSON.parse(localStorage.getItem('dreamUniversePayments') || '[]');
+                    const badge = document.getElementById('paymentBadge');
+                    if (badge) badge.textContent = payments.length;
+                } catch (e) {}
+                try {
+                    const notifications = JSON.parse(localStorage.getItem('dreamUniverseNotifications') || '[]');
+                    const unread = notifications.filter(n => !n.read).length;
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) badge.textContent = unread;
+                } catch (e) {}
+            }
+
+            // ─── 13. Init ───
+            loadReviews();
+            applyFilters();
+            updateBadges();
+
+            console.log('✨ Reviews page loaded — sidebar highlights Reviews.');
+
+        })();
+    </script>
+
+</body>
+</html>

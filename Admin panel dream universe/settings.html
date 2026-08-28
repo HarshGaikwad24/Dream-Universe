@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Universe · Settings</title>
+
+    <!-- ─── Favicon (globe-icon.png) ─── -->
+    <link rel="icon" type="image/png" href="globe-icon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #c9a94e;
+            --gold-light: #e8d48b;
+            --gold-dark: #a8892e;
+            --gold-glow: rgba(201, 169, 78, 0.25);
+            --bg-dark: #0b0a0a;
+            --bg-card: rgba(14, 14, 18, 0.92);
+            --bg-sidebar: rgba(8, 8, 10, 0.96);
+            --text-light: #f1efe8;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --text-dim: rgba(255, 255, 255, 0.25);
+            --border-gold: rgba(201, 169, 78, 0.15);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        /* ─── Background ─── */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(30, 20, 10, 0.40) 0%, rgba(0, 0, 0, 0.92) 90%),
+                radial-gradient(ellipse at 0% 50%, rgba(201, 169, 78, 0.04) 0%, transparent 70%),
+                url('speed.jpeg') center center / cover no-repeat fixed;
+        }
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.60) 100%);
+            pointer-events: none;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--card-border);
+            padding: 1.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .sidebar-brand .icon {
+            font-size: 1.6rem;
+            color: var(--gold);
+            filter: drop-shadow(0 0 12px var(--gold-glow));
+        }
+
+        .sidebar-brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .sidebar-brand small {
+            font-size: 0.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            -webkit-text-fill-color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+            margin-top: -0.1rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .sidebar-nav .nav-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+            padding: 0.8rem 0.8rem 0.3rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-nav a i {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(201, 169, 78, 0.06);
+            color: var(--text-light);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(201, 169, 78, 0.10);
+            color: var(--gold-light);
+            box-shadow: inset 0 0 0 1px rgba(201, 169, 78, 0.08);
+        }
+
+        .sidebar-nav a .badge {
+            margin-left: auto;
+            background: var(--gold-dark);
+            color: #0b0a0a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sidebar-footer .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0b0a0a;
+        }
+
+        .sidebar-footer .info {
+            flex: 1;
+        }
+
+        .sidebar-footer .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .sidebar-footer .info .role {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-footer .logout {
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer .logout:hover {
+            color: #e74c3c;
+        }
+
+        /* ─── Hamburger ─── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 101;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.5rem 0.7rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ─── Main Content ─── */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 1.8rem 2.2rem 3rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Top Bar ─── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .topbar-left h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+
+        .topbar-left h2 span {
+            color: var(--gold);
+        }
+
+        .topbar-left p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-right .date-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topbar-right .date-badge i {
+            color: var(--gold);
+        }
+
+        /* ─── Settings Tabs ─── */
+        .settings-tabs {
+            display: flex;
+            gap: 0.3rem;
+            margin-bottom: 1.8rem;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 0.3rem;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .settings-tabs button {
+            padding: 0.6rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.25s ease, color 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .settings-tabs button:hover {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .settings-tabs button.active {
+            background: rgba(201, 169, 78, 0.08);
+            color: var(--gold-light);
+        }
+
+        .settings-tabs button i {
+            margin-right: 0.4rem;
+        }
+
+        /* ─── Settings Panel ─── */
+        .settings-panel {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .settings-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.4rem 1.6rem 1.6rem;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 1.2rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .panel-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .panel-header .desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.6rem 0.9rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 78, 0.06);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.20);
+            font-weight: 300;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-group select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .form-group .hint {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 0.1rem;
+        }
+
+        /* ─── Payment Methods Grid ─── */
+        .payment-methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .payment-method-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .payment-method-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .payment-method-item.selected {
+            border-color: rgba(201, 169, 78, 0.25);
+            background: rgba(201, 169, 78, 0.04);
+        }
+
+        .payment-method-item input[type="checkbox"] {
+            accent-color: var(--gold);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .payment-method-item .pm-icon {
+            font-size: 1.2rem;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .payment-method-item .pm-icon.gpay {
+            color: #4285f4;
+        }
+
+        .payment-method-item .pm-icon.phonepe {
+            color: #5f259f;
+        }
+
+        .payment-method-item .pm-icon.card {
+            color: #ff6b6b;
+        }
+
+        .payment-method-item .pm-icon.upi {
+            color: #2ecc71;
+        }
+
+        .payment-method-item .pm-icon.cash {
+            color: #f1c40f;
+        }
+
+        .payment-method-item .pm-icon.netbanking {
+            color: #3498db;
+        }
+
+        .payment-method-item .pm-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .payment-method-item .pm-badge {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            padding: 0.05rem 0.4rem;
+            border-radius: 10px;
+            background: rgba(46, 204, 113, 0.12);
+            color: #2ecc71;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .payment-method-item .pm-badge.recommended {
+            background: rgba(201, 169, 78, 0.12);
+            color: var(--gold-light);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-save {
+            padding: 0.6rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            box-shadow: 0 4px 16px rgba(201, 169, 78, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 169, 78, 0.25);
+        }
+
+        .btn-reset {
+            padding: 0.6rem 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        /* ─── Toggle Switch ─── */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.4rem 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 24px;
+            transition: 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--text-light);
+            border-radius: 50%;
+            transition: 0.3s ease;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--gold);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(18px);
+        }
+
+        .toggle-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .toggle-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-gold);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            color: var(--text-light);
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ─── Currency Preview ─── */
+        .currency-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(201, 169, 78, 0.06);
+            border: 1px solid rgba(201, 169, 78, 0.10);
+            border-radius: 8px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--gold-light);
+        }
+
+        .currency-preview i {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 1.2rem 1rem 2rem;
+            }
+
+            .topbar-left h2 {
+                font-size: 1.2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .panel {
+                padding: 1rem;
+            }
+
+            .settings-tabs {
+                flex-wrap: wrap;
+            }
+
+            .settings-tabs button {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-save,
+            .btn-reset {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .payment-methods-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar-right .date-badge {
+                display: none;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+            .payment-methods-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Background ─── -->
+    <div class="bg-layer"></div>
+
+    <!-- ─── Hamburger ─── -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- ─── Sidebar Overlay ─── -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="icon">✦</span>
+            <div>
+                <h1>Dream Universe</h1>
+                <small>Admin Panel</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="admin dashboard.html" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="manage-cars.html" data-page="cars">
+                <i class="fas fa-car"></i> Cars
+                <span class="badge" id="carBadge">0</span>
+            </a>
+            <a href="bookings.html" data-page="bookings">
+                <i class="fas fa-calendar-check"></i> Bookings
+                <span class="badge" id="bookingBadge">0</span>
+            </a>
+            <a href="users.html" data-page="users">
+                <i class="fas fa-users"></i> Users
+                <span class="badge" id="userBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">Management</div>
+            <a href="payments.html" data-page="payments">
+                <i class="fas fa-credit-card"></i> Payments
+                <span class="badge" id="paymentBadge">0</span>
+            </a>
+            <a href="reports.html" data-page="reports">
+                <i class="fas fa-chart-line"></i> Reports
+            </a>
+            <a href="reviews.html" data-page="reviews">
+                <i class="fas fa-star"></i> Reviews
+                <span class="badge" id="reviewBadge">0</span>
+            </a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">System</div>
+            <a href="profile.html" data-page="profile">
+                <i class="fas fa-user-cog"></i> Profile
+            </a>
+            <a href="notifications.html" data-page="notifications">
+                <i class="fas fa-bell"></i> Notifications
+                <span class="badge" id="notificationBadge">0</span>
+            </a>
+            <a href="logs.html" data-page="logs">
+                <i class="fas fa-history"></i> Logs
+            </a>
+            <!-- ✅ Settings link highlighted -->
+            <a href="settings.html" data-page="settings" class="active">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="avatar">AD</div>
+            <div class="info">
+                <div class="name">Admin</div>
+                <div class="role">Super Admin</div>
+            </div>
+            <div class="logout" onclick="logoutUser();">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main">
+
+        <!-- ─── Top Bar ─── -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Settings <span>✦</span></h2>
+                <p>Configure your site preferences, business rules, and system settings.</p>
+            </div>
+            <div class="topbar-right">
+                <div class="date-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Settings Tabs ─── -->
+        <div class="settings-tabs">
+            <button class="active" data-tab="general" onclick="switchTab('general')">
+                <i class="fas fa-globe"></i> General
+            </button>
+            <button data-tab="rental" onclick="switchTab('rental')">
+                <i class="fas fa-car"></i> Rental
+            </button>
+            <button data-tab="payment" onclick="switchTab('payment')">
+                <i class="fas fa-credit-card"></i> Payment
+            </button>
+            <button data-tab="email" onclick="switchTab('email')">
+                <i class="fas fa-envelope"></i> Email
+            </button>
+            <button data-tab="security" onclick="switchTab('security')">
+                <i class="fas fa-shield-alt"></i> Security
+            </button>
+        </div>
+
+        <!-- ─── Tab: General ─── -->
+        <div class="settings-panel active" id="tab-general">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>General Settings</h3>
+                    <span class="desc">Basic site information and contact details</span>
+                </div>
+                <form onsubmit="saveSettings(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Site Name <span class="required">*</span></label>
+                            <input type="text" id="siteName" placeholder="Enter site name" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Tagline</label>
+                            <input type="text" id="tagline" placeholder="Enter your tagline" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Support Email <span class="required">*</span></label>
+                            <input type="email" id="supportEmail" placeholder="support@yourdomain.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Support Phone <span class="required">*</span></label>
+                            <input type="tel" id="supportPhone" placeholder="+91 98765 43210" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Business Address</label>
+                        <textarea id="businessAddress" rows="2" placeholder="Enter your business address"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="reset" class="btn-reset" onclick="resetForm(this.closest('form'))">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── Tab: Rental ─── -->
+        <div class="settings-panel" id="tab-rental">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Rental Settings</h3>
+                    <span class="desc">Tax rates, deposit amounts, and rental policies</span>
+                </div>
+                <form onsubmit="saveSettings(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tax Rate (%) <span class="required">*</span></label>
+                            <input type="number" id="taxRate" placeholder="18" min="0" max="100" step="0.5" required />
+                            <span class="hint">GST / Service tax applied to all bookings</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Security Deposit (₹) <span class="required">*</span></label>
+                            <input type="number" id="securityDeposit" placeholder="5000" min="0" required />
+                            <span class="hint">Refundable deposit amount per booking</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cancellation Policy (hours) <span class="required">*</span></label>
+                            <input type="number" id="cancellationPolicy" placeholder="24" min="0" required />
+                            <span class="hint">Hours before pickup to cancel for full refund</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Booking Window (days) <span class="required">*</span></label>
+                            <input type="number" id="bookingWindow" placeholder="30" min="1" required />
+                            <span class="hint">Maximum days in advance for booking</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Minimum Rental Period (days) <span class="required">*</span></label>
+                            <input type="number" id="minRentalPeriod" placeholder="1" min="1" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Maximum Rental Period (days)</label>
+                            <input type="number" id="maxRentalPeriod" placeholder="30" min="1" />
+                            <span class="hint">Leave empty for no limit</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="reset" class="btn-reset" onclick="resetForm(this.closest('form'))">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add-ons Settings -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Add-ons Pricing</h3>
+                    <span class="desc">Additional services and their prices</span>
+                </div>
+                <form onsubmit="saveSettings(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>GPS (₹/day)</label>
+                            <input type="number" id="gpsPrice" placeholder="500" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Child Seat (₹/day)</label>
+                            <input type="number" id="childSeatPrice" placeholder="350" min="0" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Extra Driver (₹/day)</label>
+                            <input type="number" id="extraDriverPrice" placeholder="800" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Upgrade (₹/day)</label>
+                            <input type="number" id="insurancePrice" placeholder="1200" min="0" />
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="reset" class="btn-reset" onclick="resetForm(this.closest('form'))">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── Tab: Payment ─── -->
+        <div class="settings-panel" id="tab-payment">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Payment Settings</h3>
+                    <span class="desc">Currency, payment methods, and gateway configuration</span>
+                </div>
+                <form onsubmit="saveSettings(event)">
+                    <!-- Currency -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Currency <span class="required">*</span></label>
+                            <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                                <input type="text" id="currency" value="INR - Indian Rupee" disabled style="opacity:0.6;cursor:not-allowed;flex:1;" />
+                                <span class="currency-preview">
+                                    <i class="fas fa-check-circle" style="color:#2ecc71;"></i>
+                                    ₹ Prefix
+                                </span>
+                            </div>
+                            <span class="hint">Currency is set to Indian Rupee (₹) with prefix display</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Stripe Publishable Key</label>
+                            <input type="text" id="stripeKey" placeholder="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX" />
+                            <span class="hint">Your Stripe publishable key for payment processing</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="form-group" style="margin-top:0.5rem;">
+                        <label>Accepted Payment Methods</label>
+                        <div class="payment-methods-grid">
+                            <label class="payment-method-item selected">
+                                <input type="checkbox" checked value="gpay" />
+                                <span class="pm-icon gpay"><i class="fab fa-google-pay"></i></span>
+                                <span class="pm-label">GPay</span>
+                                <span class="pm-badge recommended">Recommended</span>
+                            </label>
+                            <label class="payment-method-item selected">
+                                <input type="checkbox" checked value="phonepe" />
+                                <span class="pm-icon phonepe"><i class="fas fa-mobile-alt"></i></span>
+                                <span class="pm-label">PhonePe</span>
+                                <span class="pm-badge recommended">Recommended</span>
+                            </label>
+                            <label class="payment-method-item selected">
+                                <input type="checkbox" checked value="card" />
+                                <span class="pm-icon card"><i class="fas fa-credit-card"></i></span>
+                                <span class="pm-label">Card</span>
+                            </label>
+                            <label class="payment-method-item selected">
+                                <input type="checkbox" checked value="upi" />
+                                <span class="pm-icon upi"><i class="fas fa-qrcode"></i></span>
+                                <span class="pm-label">UPI</span>
+                            </label>
+                            <label class="payment-method-item selected">
+                                <input type="checkbox" checked value="cash" />
+                                <span class="pm-icon cash"><i class="fas fa-money-bill-wave"></i></span>
+                                <span class="pm-label">Cash on Pickup</span>
+                            </label>
+                            <label class="payment-method-item">
+                                <input type="checkbox" value="netbanking" />
+                                <span class="pm-icon netbanking"><i class="fas fa-university"></i></span>
+                                <span class="pm-label">NetBanking</span>
+                            </label>
+                        </div>
+                        <span class="hint" style="margin-top:0.4rem;display:block;">
+                            <i class="fas fa-info-circle" style="color:var(--gold);"></i>
+                            GPay and PhonePe are recommended for faster checkout
+                        </span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="reset" class="btn-reset" onclick="resetForm(this.closest('form'))">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── Tab: Email ─── -->
+        <div class="settings-panel" id="tab-email">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Email Templates</h3>
+                    <span class="desc">Customize automated email notifications</span>
+                </div>
+                <form onsubmit="saveSettings(event)">
+                    <div class="form-group">
+                        <label>Booking Confirmation Email Subject</label>
+                        <input type="text" id="confirmSubject" placeholder="Your Booking Confirmation" />
+                    </div>
+                    <div class="form-group">
+                        <label>Booking Confirmation Email Template</label>
+                        <textarea id="confirmEmail" rows="4" placeholder="Dear {customer_name}, 
+
+        Your booking for {car_name} has been confirmed!
+        Pickup: {pickup_date}
+        Dropoff: {dropoff_date}
+
+        Thank you for choosing us!"></textarea>
+                        <span class="hint">Use {customer_name}, {car_name}, {pickup_date}, {dropoff_date}, {pickup_location}, {dropoff_location}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Receipt Email Subject</label>
+                        <input type="text" id="receiptSubject" placeholder="Your Payment Receipt" />
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Receipt Email Template</label>
+                        <textarea id="receiptEmail" rows="4" placeholder="Dear {customer_name},
+
+        Thank you for your payment of ₹{amount} for {car_name}.
+        Transaction ID: {transaction_id}
+
+        Your receipt is attached."></textarea>
+                        <span class="hint">Use {customer_name}, {car_name}, {amount}, {transaction_id}</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="reset" class="btn-reset" onclick="resetForm(this.closest('form'))">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── Tab: Security ─── -->
+        <div class="settings-panel" id="tab-security">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Security Settings</h3>
+                    <span class="desc">Authentication, session, and password policies</span>
+                </div>
+                <form onsubmit="saveSettings(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Minimum Password Length <span class="required">*</span></label>
+                            <input type="number" id="minPasswordLength" placeholder="8" min="6" max="20" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Session Timeout (minutes) <span class="required">*</span></label>
+                            <input type="number" id="sessionTimeout" placeholder="60" min="5" required />
+                            <span class="hint">Auto-logout after inactivity</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Maximum Login Attempts <span class="required">*</span></label>
+                        <input type="number" id="maxLoginAttempts" placeholder="5" min="3" max="10" required />
+                        <span class="hint">Lock account after failed attempts</span>
+                    </div>
+                    <div class="form-group" style="margin-top:0.4rem;">
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked />
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div>
+                                <div class="toggle-label">Require Two-Factor Authentication (2FA)</div>
+                                <div class="toggle-desc">Admins will need to verify via OTP for login</div>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" />
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div>
+                                <div class="toggle-label">IP Whitelist for Admin Access</div>
+                                <div class="toggle-desc">Restrict admin login to specific IP addresses</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="reset" class="btn-reset" onclick="resetForm(this.closest('form'))">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── Footer ─── -->
+        <div style="margin-top:2rem;font-size:0.7rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--card-border);padding-top:1.5rem;">
+            &copy; 2026 Dream Universe Car Rentals — Admin Panel
+        </div>
+
+    </main>
+
+    <!-- ─── Toast ─── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ─── Shared Navigation Script ─── -->
+    <script src="nav.js"></script>
+
+    <!-- ─── Page-Specific Script ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── 1. Set current date ───
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('en-IN', options);
+            }
+
+            // ─── 2. Toast ───
+            let toastTimeout;
+
+            window.showToast = function(msg) {
+                const el = document.getElementById('toast');
+                if (!el) return;
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(function() {
+                    el.classList.remove('show');
+                }, 2800);
+            };
+
+            // ─── 3. Logout (fallback) ───
+            window.logoutUser = window.logoutUser || function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'login.html';
+                }
+            };
+
+            // ─── 4. Tab Switching ───
+            window.switchTab = function(tabId) {
+                document.querySelectorAll('.settings-tabs button').forEach(function(btn) {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+                document.querySelectorAll('.settings-panel').forEach(function(panel) {
+                    panel.classList.toggle('active', panel.id === 'tab-' + tabId);
+                });
+            };
+
+            // ─── 5. Save Settings ───
+            window.saveSettings = function(e) {
+                e.preventDefault();
+                var form = e.target;
+                var btn = form.querySelector('.btn-save');
+                var originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+
+                setTimeout(function() {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                    btn.style.background = 'linear-gradient(135deg, #2d7a4a, #3a9d5e)';
+                    btn.style.color = '#fff';
+                    btn.disabled = false;
+
+                    setTimeout(function() {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '';
+                        btn.style.color = '';
+                        btn.style.opacity = '1';
+                    }, 1500);
+
+                    showToast('✅ Settings saved successfully!');
+                }, 800);
+            };
+
+            // ─── 6. Reset Form ───
+            window.resetForm = function(form) {
+                if (confirm('Reset all fields to their default values?')) {
+                    form.reset();
+                    showToast('🔄 Form has been reset.');
+                }
+            };
+
+            // ─── 7. Sidebar Toggle ───
+            var hamburger = document.getElementById('hamburger');
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // ─── 8. Update Badges ───
+            function updateBadges() {
+                try {
+                    var cars = JSON.parse(localStorage.getItem('dreamUniverseCars') || '[]');
+                    var badge = document.getElementById('carBadge');
+                    if (badge) badge.textContent = cars.length;
+                } catch (e) {}
+                try {
+                    var bookings = JSON.parse(localStorage.getItem('dreamUniverseBookings') || '[]');
+                    var badge = document.getElementById('bookingBadge');
+                    if (badge) badge.textContent = bookings.length;
+                } catch (e) {}
+                var userBadge = document.getElementById('userBadge');
+                if (userBadge) userBadge.textContent = 0;
+                try {
+                    var payments = JSON.parse(localStorage.getItem('dreamUniversePayments') || '[]');
+                    var badge = document.getElementById('paymentBadge');
+                    if (badge) badge.textContent = payments.length;
+                } catch (e) {}
+                try {
+                    var reviews = JSON.parse(localStorage.getItem('dreamUniverseReviews') || '[]');
+                    var badge = document.getElementById('reviewBadge');
+                    if (badge) badge.textContent = reviews.length;
+                } catch (e) {}
+                try {
+                    var notifications = JSON.parse(localStorage.getItem('dreamUniverseNotifications') || '[]');
+                    var unread = notifications.filter(function(n) { return !n.read; }).length;
+                    var badge = document.getElementById('notificationBadge');
+                    if (badge) badge.textContent = unread;
+                } catch (e) {}
+            }
+
+            // ─── 9. Init ───
+            updateBadges();
+            window.addEventListener('storage', function(e) {
+                if (e.key && e.key.startsWith('dreamUniverse')) {
+                    updateBadges();
+                }
+            });
+
+            console.log('✨ Settings page loaded — navigation pane fixed.');
+
+        })();
+    </script>
+
+</body>
+</html>

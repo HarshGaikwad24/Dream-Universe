@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Universe · Add / Edit Car</title>
+
+    <!-- ─── Favicon (globe-icon.png) ─── -->
+    <link rel="icon" type="image/png" href="globe-icon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --gold: #c9a94e;
+            --gold-light: #e8d48b;
+            --gold-dark: #a8892e;
+            --gold-glow: rgba(201, 169, 78, 0.25);
+            --bg-dark: #0b0a0a;
+            --bg-card: rgba(14, 14, 18, 0.92);
+            --bg-sidebar: rgba(8, 8, 10, 0.96);
+            --text-light: #f1efe8;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --text-dim: rgba(255, 255, 255, 0.25);
+            --border-gold: rgba(201, 169, 78, 0.15);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        /* ─── Background ─── */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(30, 20, 10, 0.40) 0%, rgba(0, 0, 0, 0.92) 90%),
+                radial-gradient(ellipse at 0% 50%, rgba(201, 169, 78, 0.04) 0%, transparent 70%),
+                url('speed.jpeg') center center / cover no-repeat fixed;
+        }
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.60) 100%);
+            pointer-events: none;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--card-border);
+            padding: 1.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .sidebar-brand .icon {
+            font-size: 1.6rem;
+            color: var(--gold);
+            filter: drop-shadow(0 0 12px var(--gold-glow));
+        }
+        .sidebar-brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        .sidebar-brand small {
+            font-size: 0.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            -webkit-text-fill-color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+            margin-top: -0.1rem;
+        }
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .sidebar-nav .nav-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+            padding: 0.8rem 0.8rem 0.3rem;
+            font-weight: 600;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+        .sidebar-nav a i {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-nav a:hover {
+            background: rgba(201, 169, 78, 0.06);
+            color: var(--text-light);
+        }
+        .sidebar-nav a.active {
+            background: rgba(201, 169, 78, 0.10);
+            color: var(--gold-light);
+            box-shadow: inset 0 0 0 1px rgba(201, 169, 78, 0.08);
+        }
+        .sidebar-nav a .badge {
+            margin-left: auto;
+            background: var(--gold-dark);
+            color: #0b0a0a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+        }
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .sidebar-footer .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0b0a0a;
+        }
+        .sidebar-footer .info {
+            flex: 1;
+        }
+        .sidebar-footer .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .sidebar-footer .info .role {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        .sidebar-footer .logout {
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .sidebar-footer .logout:hover {
+            color: #e74c3c;
+        }
+
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 101;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.5rem 0.7rem;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s ease;
+        }
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 1.8rem 2.2rem 3rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .topbar-left h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+        .topbar-left h2 span {
+            color: var(--gold);
+        }
+        .topbar-left p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .topbar-right .date-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .topbar-right .date-badge i {
+            color: var(--gold);
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.6rem 2rem;
+            box-shadow: var(--shadow-card);
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .panel-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .panel-header .back-link {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .panel-header .back-link:hover {
+            color: var(--gold-light);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+        .form-group label .required {
+            color: #e74c3c;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.7rem 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 78, 0.06);
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.20);
+            font-weight: 300;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+        .form-group .hint {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .image-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+        .image-upload-area:hover {
+            border-color: rgba(201, 169, 78, 0.20);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .image-upload-area i {
+            font-size: 2rem;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .image-upload-area p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .image-upload-area .sub {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+        .image-upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .current-image {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+        }
+        .current-image img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #1a1818;
+        }
+        .current-image .info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .btn-submit {
+            padding: 0.7rem 2.5rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #0b0a0a;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.35s ease;
+            box-shadow: 0 4px 20px rgba(201, 169, 78, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(201, 169, 78, 0.25);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-cancel {
+            padding: 0.7rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-gold);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            color: var(--text-light);
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .hamburger {
+                display: block;
+            }
+            .main {
+                margin-left: 0;
+                padding: 1.2rem 1rem 2rem;
+            }
+            .topbar-left h2 {
+                font-size: 1.2rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+            .panel {
+                padding: 1.2rem 1rem;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        @media (max-width: 480px) {
+            .topbar-right .date-badge {
+                display: none;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Background ─── -->
+    <div class="bg-layer"></div>
+
+    <!-- ─── Hamburger ─── -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- ─── Sidebar Overlay ─── -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="icon">✦</span>
+            <div>
+                <h1>Dream Universe</h1>
+                <small>Admin Panel</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="admin dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="manage-cars.html" id="carsLink"><i class="fas fa-car"></i> Cars <span class="badge" id="carBadge">0</span></a>
+            <a href="bookings.html"><i class="fas fa-calendar-check"></i> Bookings <span class="badge" id="bookingBadge">0</span></a>
+            <a href="users.html"><i class="fas fa-users"></i> Users <span class="badge" id="userBadge">0</span></a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">Management</div>
+            <a href="payments.html"><i class="fas fa-credit-card"></i> Payments <span class="badge" id="paymentBadge">0</span></a>
+            <a href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+            <a href="reviews.html"><i class="fas fa-star"></i> Reviews <span class="badge" id="reviewBadge">0</span></a>
+
+            <div class="nav-label" style="margin-top:0.8rem;">System</div>
+            <a href="profile.html"><i class="fas fa-user-cog"></i> Profile</a>
+            <a href="notifications.html"><i class="fas fa-bell"></i> Notifications <span class="badge" id="notificationBadge">0</span></a>
+            <a href="logs.html"><i class="fas fa-history"></i> Logs</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="avatar">AD</div>
+            <div class="info">
+                <div class="name">Admin</div>
+                <div class="role">Super Admin</div>
+            </div>
+            <div class="logout" onclick="logoutUser();"><i class="fas fa-sign-out-alt"></i></div>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main">
+
+        <!-- ─── Top Bar ─── -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2 id="pageTitle">Add Car <span>✦</span></h2>
+                <p id="pageSub">Add a new vehicle to your fleet.</p>
+            </div>
+            <div class="topbar-right">
+                <div class="date-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Form ─── -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3 id="formTitle">Car Details</h3>
+                <!-- ✅ FIXED: "Back to Cars" now redirects to manage-cars.html -->
+                <a class="back-link" href="manage-cars.html">
+                    <i class="fas fa-arrow-left"></i> Back to Cars
+                </a>
+            </div>
+
+            <form id="carForm" onsubmit="handleSubmit(event)">
+                <input type="hidden" id="carId" value="" />
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Car Name / Model <span class="required">*</span></label>
+                        <input type="text" id="carName" placeholder="e.g. Mercedes-Benz EQS" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Make / Brand <span class="required">*</span></label>
+                        <input type="text" id="carMake" placeholder="e.g. Mercedes-Benz" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Year <span class="required">*</span></label>
+                        <input type="number" id="carYear" placeholder="2025" min="2000" max="2026" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Car Type <span class="required">*</span></label>
+                        <select id="carType" required>
+                            <option value="">Select Type</option>
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Luxury">Luxury</option>
+                            <option value="Hatchback">Hatchback</option>
+                            <option value="Sports">Sports</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Transmission <span class="required">*</span></label>
+                        <select id="carTransmission" required>
+                            <option value="">Select Transmission</option>
+                            <option value="Automatic">Automatic</option>
+                            <option value="Manual">Manual</option>
+                            <option value="CVT">CVT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Seats <span class="required">*</span></label>
+                        <input type="number" id="carSeats" placeholder="5" min="2" max="12" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price per Day (₹) <span class="required">*</span></label>
+                        <input type="number" id="carPrice" placeholder="4800" min="0" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Status <span class="required">*</span></label>
+                        <select id="carStatus" required>
+                            <option value="available">Available</option>
+                            <option value="booked">Booked</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:1.2rem;">
+                    <label>Car Image</label>
+                    <div class="image-upload-area" id="imageUploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click or drag to upload car image</p>
+                        <span class="sub">PNG, JPG, WEBP up to 5MB</span>
+                        <input type="file" id="carImage" accept="image/*" />
+                    </div>
+                    <div class="current-image" id="currentImageDisplay" style="display:none;">
+                        <img id="currentImagePreview" src="" alt="Current image" />
+                        <div class="info" id="currentImageInfo">Current image</div>
+                    </div>
+                    <div class="hint" id="imageFileName">No file selected</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0.4rem;">
+                    <label>Description</label>
+                    <textarea id="carDescription" placeholder="Describe the car's features, performance, and special highlights..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fas fa-plus"></i> <span id="submitBtnText">Add Car</span>
+                    </button>
+                    <button type="button" class="btn-cancel" onclick="window.location.href='manage-cars.html'">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ─── Footer ─── -->
+        <div style="margin-top:2rem;font-size:0.7rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--card-border);padding-top:1.5rem;">
+            &copy; 2026 Dream Universe Car Rentals — Admin Panel
+        </div>
+
+    </main>
+
+    <!-- ─── Toast ─── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ─── Scripts ─── -->
+    <!-- Shared navigation script -->
+    <script src="nav.js"></script>
+
+    <!-- ─── Page-specific script ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            const STORAGE_KEY = 'dreamUniverseCars';
+
+            function loadCars() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try { return JSON.parse(stored); } catch (e) {}
+                }
+                return [];
+            }
+
+            function saveCars(cars) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
+            }
+
+            let toastTimeout;
+            window.showToast = function(msg) {
+                const el = document.getElementById('toast');
+                if (!el) return;
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    el.classList.remove('show');
+                }, 2800);
+            };
+
+            // ─── Logout ───
+            window.logoutUser = window.logoutUser || function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'login.html';
+                }
+            };
+
+            // ─── Get car ID from URL ───
+            function getCarIdFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get('id');
+                return id ? parseInt(id) : null;
+            }
+
+            function isEditMode() {
+                return getCarIdFromURL() !== null;
+            }
+
+            function loadCarData() {
+                const id = getCarIdFromURL();
+                if (!id) return null;
+                const cars = loadCars();
+                const car = cars.find(c => c.id === id);
+                if (!car) {
+                    showToast('⚠️ Car not found. Redirecting...');
+                    setTimeout(() => { window.location.href = 'manage-cars.html'; }, 1000);
+                    return null;
+                }
+                return car;
+            }
+
+            function populateForm(car) {
+                if (!car) return;
+                document.getElementById('carId').value = car.id;
+                document.getElementById('carName').value = car.name || '';
+                document.getElementById('carMake').value = car.make || '';
+                document.getElementById('carYear').value = car.year || '';
+                document.getElementById('carType').value = car.type || '';
+                document.getElementById('carTransmission').value = car.transmission || '';
+                document.getElementById('carSeats').value = car.seats || '';
+                document.getElementById('carPrice').value = car.price || '';
+                document.getElementById('carStatus').value = car.status || 'available';
+                document.getElementById('carDescription').value = car.description || '';
+
+                const imgDisplay = document.getElementById('currentImageDisplay');
+                const imgPreview = document.getElementById('currentImagePreview');
+                const imgInfo = document.getElementById('currentImageInfo');
+                if (car.image) {
+                    imgDisplay.style.display = 'flex';
+                    imgPreview.src = car.image;
+                    imgPreview.alt = car.name;
+                    imgInfo.textContent = 'Current: ' + car.name;
+                } else {
+                    imgDisplay.style.display = 'none';
+                }
+            }
+
+            function updateUIMode() {
+                const editMode = isEditMode();
+                const pageTitle = document.getElementById('pageTitle');
+                const pageSub = document.getElementById('pageSub');
+                const formTitle = document.getElementById('formTitle');
+                const submitBtnText = document.getElementById('submitBtnText');
+                const submitBtn = document.getElementById('submitBtn');
+
+                if (editMode) {
+                    pageTitle.innerHTML = 'Edit Car <span>✦</span>';
+                    pageSub.textContent = 'Update vehicle details.';
+                    formTitle.textContent = 'Edit Car Details';
+                    submitBtnText.textContent = 'Update Car';
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Car';
+                } else {
+                    pageTitle.innerHTML = 'Add Car <span>✦</span>';
+                    pageSub.textContent = 'Add a new vehicle to your fleet.';
+                    formTitle.textContent = 'Car Details';
+                    submitBtnText.textContent = 'Add Car';
+                    submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add Car';
+                }
+            }
+
+            // ─── Image Upload ───
+            const fileInput = document.getElementById('carImage');
+            const fileNameDisplay = document.getElementById('imageFileName');
+
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileNameDisplay.textContent =
+                        `📎 ${this.files[0].name} (${(this.files[0].size / 1024).toFixed(1)} KB)`;
+                    fileNameDisplay.style.color = 'var(--gold-light)';
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgDisplay = document.getElementById('currentImageDisplay');
+                        const imgPreview = document.getElementById('currentImagePreview');
+                        const imgInfo = document.getElementById('currentImageInfo');
+                        imgDisplay.style.display = 'flex';
+                        imgPreview.src = e.target.result;
+                        imgInfo.textContent = 'New image selected';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    fileNameDisplay.textContent = 'No file selected';
+                    fileNameDisplay.style.color = 'var(--text-dim)';
+                }
+            });
+
+            const uploadArea = document.getElementById('imageUploadArea');
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--gold)';
+                this.style.background = 'rgba(201,169,78,0.05)';
+            });
+            uploadArea.addEventListener('dragleave', function() {
+                this.style.borderColor = 'rgba(255,255,255,0.08)';
+                this.style.background = 'rgba(255,255,255,0.02)';
+            });
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'rgba(255,255,255,0.08)';
+                this.style.background = 'rgba(255,255,255,0.02)';
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+
+            // ─── Submit ───
+            window.handleSubmit = function(e) {
+                e.preventDefault();
+
+                const editMode = isEditMode();
+                const id = parseInt(document.getElementById('carId').value) || null;
+                const name = document.getElementById('carName').value.trim();
+                const make = document.getElementById('carMake').value.trim();
+                const year = document.getElementById('carYear').value.trim();
+                const type = document.getElementById('carType').value;
+                const transmission = document.getElementById('carTransmission').value;
+                const seats = document.getElementById('carSeats').value.trim();
+                const price = document.getElementById('carPrice').value.trim();
+                const status = document.getElementById('carStatus').value;
+                const description = document.getElementById('carDescription').value.trim();
+
+                const errors = [];
+                if (!name) errors.push('Car Name');
+                if (!make) errors.push('Make / Brand');
+                if (!year) errors.push('Year');
+                if (!type) errors.push('Car Type');
+                if (!transmission) errors.push('Transmission');
+                if (!seats) errors.push('Seats');
+                if (!price) errors.push('Price');
+
+                if (errors.length > 0) {
+                    showToast(`⚠️ Please fill in all required fields: ${errors.join(', ')}`);
+                    return;
+                }
+
+                if (parseInt(year) < 2000 || parseInt(year) > 2026) {
+                    showToast('⚠️ Please enter a valid year (2000–2026)');
+                    return;
+                }
+                if (parseInt(seats) < 2 || parseInt(seats) > 12) {
+                    showToast('⚠️ Please enter a valid number of seats (2–12)');
+                    return;
+                }
+                if (parseInt(price) <= 0) {
+                    showToast('⚠️ Price must be greater than 0');
+                    return;
+                }
+
+                let cars = loadCars();
+                let carData = {
+                    name,
+                    make,
+                    year: parseInt(year),
+                    type,
+                    transmission,
+                    seats: parseInt(seats),
+                    price: parseInt(price),
+                    status,
+                    description
+                };
+
+                const btn = document.querySelector('.btn-submit');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+
+                if (editMode) {
+                    const carIndex = cars.findIndex(c => c.id === id);
+                    if (carIndex === -1) {
+                        showToast('⚠️ Car not found.');
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                        return;
+                    }
+                    carData.image = cars[carIndex].image || '';
+                    carData.id = id;
+                    cars[carIndex] = carData;
+                    saveCars(cars);
+
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
+                        btn.style.background = 'linear-gradient(135deg, #2d7a4a, #3a9d5e)';
+                        btn.style.color = '#fff';
+                        showToast(`✅ ${name} has been updated successfully!`);
+                        setTimeout(() => {
+                            window.location.href = 'manage-cars.html';
+                        }, 1500);
+                    }, 1200);
+                } else {
+                    const maxId = cars.reduce((max, c) => Math.max(max, c.id), 0);
+                    carData.id = maxId + 1;
+                    carData.image =
+                        'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=80&q=80';
+                    cars.push(carData);
+                    saveCars(cars);
+
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-check"></i> Car Added!';
+                        btn.style.background = 'linear-gradient(135deg, #2d7a4a, #3a9d5e)';
+                        btn.style.color = '#fff';
+                        showToast(`✅ ${name} has been added to the fleet!`);
+                        setTimeout(() => {
+                            window.location.href = 'manage-cars.html';
+                        }, 1500);
+                    }, 1200);
+                }
+            };
+
+            // ─── Sidebar toggle ───
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            // ─── Set Date ───
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('en-IN', options);
+            }
+
+            // ─── Init ───
+            updateUIMode();
+
+            if (isEditMode()) {
+                const car = loadCarData();
+                if (car) populateForm(car);
+            } else {
+                document.getElementById('currentImageDisplay').style.display = 'none';
+                document.getElementById('imageFileName').textContent = 'No file selected';
+            }
+
+            // ─── Force highlight Cars link (fallback) ───
+            const carsLink = document.getElementById('carsLink');
+            if (carsLink) {
+                document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+                    link.classList.remove('active');
+                });
+                carsLink.classList.add('active');
+                console.log('✅ Cars link highlighted (page-specific fallback)');
+            }
+
+            // ─── Update badge ───
+            const cars = loadCars();
+            const badge = document.getElementById('carBadge');
+            if (badge) badge.textContent = cars.length;
+
+            console.log('✨ Dream Universe — Add/Edit Car page loaded.');
+
+        })();
+    </script>
+
+</body>
+</html>
